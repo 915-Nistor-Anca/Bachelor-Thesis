@@ -34,30 +34,31 @@ function createPlanet(size, color, position) {
     const planet = new THREE.Mesh(geometry, material);
     planet.position.copy(position);
     scene.add(planet);
+    return planet;
 }
 
 // Sun
-createPlanet(109.1, 0xFF8C00, new THREE.Vector3(0, 0, 0));
+let sun = createPlanet(109.1, 0xFF8C00, new THREE.Vector3(0, 0, 0));
 
 // Mercury
-createPlanet(0.38, 0x9e9e9e, new THREE.Vector3(0.387*10 + 110, 0, 0));
+let mercury = createPlanet(0.38, 0x9e9e9e, new THREE.Vector3(0.387*10 + 110, 0, 0));
 
 // Venus
-createPlanet(0.96, 0x0000ff, new THREE.Vector3(0.723*10 + 110, 0, 0));
+let venus = createPlanet(0.96, 0x0000ff, new THREE.Vector3(0.723*10 + 110, 0, 0));
 
 // Earth
-createPlanet(1.00, 0x00ff00, new THREE.Vector3(1.000*10 + 110, 0, 0));
+let earth = createPlanet(1.00, 0x00ff00, new THREE.Vector3(1.000*10 + 110, 0, 0));
 
 // Mars
-createPlanet(0.53, 0xff0000, new THREE.Vector3(1.524*10 + 110, 0, 0));
+let mars = createPlanet(0.53, 0xff0000, new THREE.Vector3(1.524*10 + 110, 0, 0));
 
 // Jupiter
-createPlanet(10.94, 0xffa500, new THREE.Vector3(5.203*10 + 110, 0, 0));
+let jupiter = createPlanet(10.94, 0xffa500, new THREE.Vector3(5.203*10 + 110, 0, 0));
 
 // Saturn
-createPlanet(9.06, 0xffd700, new THREE.Vector3(9.539*10 + 110, 0, 0));
+let saturn = createPlanet(9.06, 0xffd700, new THREE.Vector3(9.539*10 + 110, 0, 0));
 
-const ringGeometry = new THREE.RingGeometry(5, 4, 60);
+const ringGeometry = new THREE.RingGeometry(15, 12, 60);
 const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500, side: THREE.DoubleSide });
 const ring = new THREE.Mesh(ringGeometry, ringMaterial); 
 ring.rotation.x = Math.PI / 2;
@@ -65,10 +66,10 @@ ring.position.set(9.539*10 + 110, 0, 0);
 scene.add(ring);
 
 // Uranus
-createPlanet(3.78, 0xADD8E6, new THREE.Vector3(19.191*10 + 110, 0, 0));
+let uranus = createPlanet(3.78, 0xADD8E6, new THREE.Vector3(19.191*10 + 110, 0, 0));
 
 // Neptune
-createPlanet(3.59, 0x0000ff, new THREE.Vector3(30.071*10 + 110, 0, 0));
+let neptune = createPlanet(3.59, 0x0000ff, new THREE.Vector3(30.071*10 + 110, 0, 0));
 
 
 // Add lights to the scene
@@ -120,7 +121,6 @@ function onMouseUp(event) {
 }
 
 function onWheel(event) {
-    // Zoom in or out based on the direction of mouse wheel
     camera.position.z += event.deltaY * 0.1;
 }
 
@@ -139,3 +139,32 @@ function animate() {
 }
 
 animate();
+
+function rotatePlanetAroundSun(planet, daysFullRotation, initialPositioning) {
+    let rotationAngle = 0;
+    const orbitalRadius = initialPositioning * 10 + 110; // Convert astronomical units to units in the scene
+
+    function updatePosition() {
+        rotationAngle += (2 * Math.PI / daysFullRotation); // Update the rotation angle based on the number of days for a full rotation
+
+        const X = orbitalRadius * Math.cos(rotationAngle);
+        const Z = orbitalRadius * Math.sin(rotationAngle);
+
+        planet.position.set(X, 0, Z);
+
+        requestAnimationFrame(updatePosition);
+    }
+
+    updatePosition();
+}
+
+
+rotatePlanetAroundSun(mercury, 88, 0.387);
+rotatePlanetAroundSun(venus, 225, 0.723);
+rotatePlanetAroundSun(earth, 365, 1.000);
+rotatePlanetAroundSun(mars, 687, 1.524);
+rotatePlanetAroundSun(jupiter,  4331, 5.203);
+rotatePlanetAroundSun(saturn, 10747, 9.539);
+rotatePlanetAroundSun(ring, 10747, 9.539)
+rotatePlanetAroundSun(uranus, 30589, 19.191);
+rotatePlanetAroundSun(neptune, 59800, 30.071);
