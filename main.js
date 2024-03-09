@@ -29,7 +29,7 @@ for (let i = 0; i < 100; i++) {
 }
 
 function createPlanet(size, color, position) {
-    const geometry = new THREE.SphereGeometry(40*size, 32, 32);
+    const geometry = new THREE.SphereGeometry(size, 32, 32);
     const material = new THREE.MeshStandardMaterial({ color: color });
     const planet = new THREE.Mesh(geometry, material);
     planet.position.copy(position);
@@ -37,31 +37,38 @@ function createPlanet(size, color, position) {
 }
 
 // Sun
-createPlanet(0.2, 0xFF8C00, new THREE.Vector3(10, 0, 0));
+createPlanet(109.1, 0xFF8C00, new THREE.Vector3(0, 0, 0));
 
 // Mercury
-createPlanet(0.08504, 0x9e9e9e, new THREE.Vector3(-2*4, 0, 0));
+createPlanet(0.38, 0x9e9e9e, new THREE.Vector3(0.387*10 + 110, 0, 0));
 
 // Venus
-createPlanet(0.08691, 0x0000ff, new THREE.Vector3(-4*4, 0, 0));
+createPlanet(0.96, 0x0000ff, new THREE.Vector3(0.723*10 + 110, 0, 0));
 
 // Earth
-createPlanet(0.08691, 0x00ff00, new THREE.Vector3(-6*4, 0, 0));
+createPlanet(1.00, 0x00ff00, new THREE.Vector3(1.000*10 + 110, 0, 0));
 
 // Mars
-createPlanet(0.04868, 0xff0000, new THREE.Vector3(-8*4, 0, 0));
+createPlanet(0.53, 0xff0000, new THREE.Vector3(1.524*10 + 110, 0, 0));
 
 // Jupiter
-createPlanet(0.100398, 0xffa500, new THREE.Vector3(-10*4, 0, 0));
+createPlanet(10.94, 0xffa500, new THREE.Vector3(5.203*10 + 110, 0, 0));
 
 // Saturn
-createPlanet(0.083626, 0xffd700, new THREE.Vector3(-12*4, 0, 0));
+createPlanet(9.06, 0xffd700, new THREE.Vector3(9.539*10 + 110, 0, 0));
+
+const ringGeometry = new THREE.RingGeometry(5, 4, 60);
+const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500, side: THREE.DoubleSide });
+const ring = new THREE.Mesh(ringGeometry, ringMaterial); 
+ring.rotation.x = Math.PI / 2;
+ring.position.set(9.539*10 + 110, 0, 0);
+scene.add(ring);
 
 // Uranus
-createPlanet(0.036422, 0xADD8E6, new THREE.Vector3(-14*4, 0, 0));
+createPlanet(3.78, 0xADD8E6, new THREE.Vector3(19.191*10 + 110, 0, 0));
 
 // Neptune
-createPlanet(0.035359, 0x0000ff, new THREE.Vector3(-16*4, 0, 0));
+createPlanet(3.59, 0x0000ff, new THREE.Vector3(30.071*10 + 110, 0, 0));
 
 
 // Add lights to the scene
