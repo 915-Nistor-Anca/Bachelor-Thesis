@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Star Map Example</title>
+  <style>
+    body { margin: 0; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script>
+    // Scene setup
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Create stars
+    const starCount = 1000;
+    const stars = new THREE.Group();
+    for (let i = 0; i < starCount; i++) {
+      const starGeometry = new THREE.SphereGeometry(1, 8, 8); // Increase the size of the sphere
+      const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const star = new THREE.Mesh(starGeometry, starMaterial);
+      star.position.x = (Math.random() - 0.5) * 1000;
+      star.position.y = (Math.random() - 0.5) * 1000;
+      star.position.z = (Math.random() - 0.5) * 1000;
+      star.name = `Star ${i}`; // Assign a name to each star for identification
+      stars.add(star);
+    }
+    scene.add(stars);
+
+    // Position the camera
+    camera.position.z = 300;
+
+    // Add event listener for mouse clicks
+    const raycaster = new THREE.Raycaster();
+    const mouse = new THREE.Vector2();
+    const onClick = function (event) {
+      // Calculate mouse position in normalized device coordinates (-1 to +1) for both components
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      // Update the picking ray with the camera and mouse position
+      raycaster.setFromCamera(mouse, camera);
+
+      // Check for intersections
+      const intersects = raycaster.intersectObjects(stars.children);
+
+      if (intersects.length > 0) {
+        // Display information about the clicked star
+        const starName = intersects[0].object.name;
+        alert(`Clicked on ${starName}`);
+      }
+    };
+
+    document.addEventListener('click', onClick, false);
+
+    // Animation loop
+    const animate = function () {
+      requestAnimationFrame(animate);
+
+      // Rotate stars slowly
+      stars.rotation.x += 0.0001;
+      stars.rotation.y += 0.0001;
+
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  </script>
+</body>
+</html>
