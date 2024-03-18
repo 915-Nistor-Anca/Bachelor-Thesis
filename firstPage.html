@@ -10,6 +10,8 @@
       padding: 0;
       overflow: hidden;
       background-color: #000;
+      color: #fff; /* Text color */
+      font-family: Arial, sans-serif;
     }
 
     .container {
@@ -25,11 +27,23 @@
       border-radius: 50%;
       margin: 10px;
     }
+
+    #title {
+  position: absolute;
+  top: 20%; /* Position at 50% from the top */
+  left: 50%; /* Position at 50% from the left */
+  transform: translate(-50%, -50%); /* Center the text horizontally and vertically */
+  font-size: 70px;
+  font-family: 'Pacifico', cursive;
+  opacity: 0; /* Initially hidden */
+}
+
   </style>
 </head>
 <body>
   <div class="container" id="app">
   </div>
+  <div id="title">Celestial Navigator</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -46,7 +60,6 @@
         { size: 3.59, texture: 'neptune.jpg' }
       ];
 
-      
       planets.forEach((planet, index) => {
         const sphere = document.createElement('div');
         const size = planet.size * 30;
@@ -59,20 +72,29 @@
         gsap.from(sphere, {
           duration: 1,
           opacity: 0,
-          scale: 0,
+          scale: 5,
           y: -100,
           ease: 'power2.out', 
           delay: index * 0.1,
           onComplete: () => {
             console.log(`Sphere ${index + 1} appeared and fell!`);
-           
             const remainingSpace = window.innerHeight - sphere.getBoundingClientRect().bottom;
-            const bounceAmplitude = Math.min(size * 1, remainingSpace); 
+            const bounceAmplitude = Math.min(size * 2, remainingSpace);
             gsap.to(sphere, {
-              duration: 0.5,
-              y: `+=${bounceAmplitude}`, 
-              repeat: 1,
-              yoyo: true
+              duration: 0.3,
+              y: `+=${bounceAmplitude}`,
+              onComplete: () => {
+                gsap.to(sphere, {
+                  duration: 0.2,
+                  y: `-=${bounceAmplitude / 5}`,
+                  repeat: 1,
+                  yoyo: true,
+                  onComplete: () => {
+                    // Fade in the title after the spheres have settled
+                    gsap.to('#title', { duration: 1, opacity: 1, delay: 0.5 });
+                  }
+                });
+              }
             });
           }
         });
