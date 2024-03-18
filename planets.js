@@ -28,56 +28,67 @@ for (let i = 0; i < 100; i++) {
     createStar();
 }
 
-function createPlanet(size, color, position) {
+function createPlanet(size, color, position, texturePath = null) {
     const geometry = new THREE.SphereGeometry(size, 32, 32);
-    const material = new THREE.MeshStandardMaterial({ color: color });
+    let material;
+
+    if (texturePath) {
+        const textureLoader = new THREE.TextureLoader();
+        const texture = textureLoader.load(texturePath);
+        material = new THREE.MeshStandardMaterial({ map: texture });
+    } else {
+        material = new THREE.MeshStandardMaterial({ color: color });
+    }
+
     const planet = new THREE.Mesh(geometry, material);
     planet.position.copy(position);
     scene.add(planet);
     return planet;
 }
 
+
 // Sun
-let sun = createPlanet(109.1, 0xFF8C00, new THREE.Vector3(0, 0, 0));
+let sun = createPlanet(109.1, 0xFF8C00, new THREE.Vector3(0, 0, 0), 'sun.jpg');
 
 // Mercury
-let mercury = createPlanet(0.38, 0x9e9e9e, new THREE.Vector3(0.387*10 + 110, 0, 0));
+let mercury = createPlanet(0.38, 0x9e9e9e, new THREE.Vector3(0.387*10 + 110, 0, 0), 'mercury.jpg');
 
 // Venus
-let venus = createPlanet(0.96, 0x0000ff, new THREE.Vector3(0.723*10 + 110, 0, 0));
+let venus = createPlanet(0.96, 0x0000ff, new THREE.Vector3(0.723*10 + 110, 0, 0), 'venus.jpg');
 
 // Earth
-let earth = createPlanet(1.00, 0x00ff00, new THREE.Vector3(1.000*10 + 110, 0, 0));
+let earth = createPlanet(1.00, 0x00ff00, new THREE.Vector3(1.000*10 + 110, 0, 0), 'earth.jpg');
 
 // Mars
-let mars = createPlanet(0.53, 0xff0000, new THREE.Vector3(1.524*10 + 110, 0, 0));
+let mars = createPlanet(0.53, 0xff0000, new THREE.Vector3(1.524*10 + 110, 0, 0), 'mars.jpg');
 
 // Jupiter
-let jupiter = createPlanet(10.94, 0xffa500, new THREE.Vector3(5.203*10 + 110, 0, 0));
+let jupiter = createPlanet(10.94, 0xffa500, new THREE.Vector3(5.203*10 + 110, 0, 0), 'jupiter.jpg');
 
 // Saturn
-let saturn = createPlanet(9.06, 0xffd700, new THREE.Vector3(9.539*10 + 110, 0, 0));
+let saturn = createPlanet(9.06, 0xffd700, new THREE.Vector3(9.539*10 + 110, 0, 0), 'saturn.jpg');
 
+const ringTexture = new THREE.TextureLoader().load('ring.png');
+const ringMaterial = new THREE.MeshBasicMaterial({ map: ringTexture, side: THREE.DoubleSide });
 const ringGeometry = new THREE.RingGeometry(15, 12, 60);
-const ringMaterial = new THREE.MeshBasicMaterial({ color: 0xffa500, side: THREE.DoubleSide });
-const ring = new THREE.Mesh(ringGeometry, ringMaterial); 
+const ring = new THREE.Mesh(ringGeometry, ringMaterial);
 ring.rotation.x = Math.PI / 2;
-ring.position.set(9.539*10 + 110, 0, 0);
+ring.position.set(9.539 * 10 + 110, 0, 0);
 scene.add(ring);
 
+
 // Uranus
-let uranus = createPlanet(3.78, 0xADD8E6, new THREE.Vector3(19.191*10 + 110, 0, 0));
+let uranus = createPlanet(3.78, 0xADD8E6, new THREE.Vector3(19.191*10 + 110, 0, 0), 'uranus.jpg');
 
 // Neptune
-let neptune = createPlanet(3.59, 0x0000ff, new THREE.Vector3(30.071*10 + 110, 0, 0));
+let neptune = createPlanet(3.59, 0x0000ff, new THREE.Vector3(30.071*10 + 110, 0, 0), 'neptune.jpg');
 
 
-// Add lights to the scene
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft white light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
 scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5); // White directional light
-directionalLight.position.set(5, 5, 5); // Position the light source
+const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+directionalLight.position.set(0, 0, 0); 
 scene.add(directionalLight);
 
 camera.position.z = 5;
@@ -168,3 +179,26 @@ rotatePlanetAroundSun(saturn, 10747, 9.539);
 rotatePlanetAroundSun(ring, 10747, 9.539)
 rotatePlanetAroundSun(uranus, 30589, 19.191);
 rotatePlanetAroundSun(neptune, 59800, 30.071);
+
+
+console.log("HELLO")
+
+// Import necessary modules
+const { astroquery } = require('astroquery');
+const { Simbad } = require('astroquery/simbad');
+
+// Set up SIMBAD query
+const simbad = new Simbad();
+
+// Define the name of the star you want to query
+const starName = 'Sirius'; // For example, querying information about the star Sirius
+
+// Perform the query
+simbad.queryObject(starName)
+    .then(result => {
+        // Print the result to the console
+        console.log(result);
+    })
+    .catch(error => {
+        console.error('Error retrieving data from SIMBAD:', error);
+    });
