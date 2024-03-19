@@ -33,12 +33,16 @@
       top: 20%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 70px;
+      font-size: 85px;
       font-family: 'Times New Roman', cursive;
       font-style: italic;
       opacity: 0;
+      background-image: url('textTexture.jpg');
+      background-size: cover;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
     }
-
   </style>
 </head>
 <body>
@@ -60,7 +64,6 @@
         { size: 3.78, texture: 'uranus.jpg' },
         { size: 3.59, texture: 'neptune.jpg' }
       ];
-
 
       planets.forEach((planet, index) => {
         const sphere = document.createElement('div');
@@ -92,8 +95,22 @@
                   repeat: 1,
                   yoyo: true,
                   onComplete: () => {
-                    // Fade in the title after the spheres have settled
                     gsap.to('#title', { duration: 1, opacity: 1, delay: 0.5 });
+
+                    if (index === 8) {
+                      const earthX = 8020;
+                      const earthY = -13700;
+                      gsap.to(container, {
+                          duration: 3,
+                          scale: 40,
+                          x: earthX,
+                          y: earthY,
+                          ease: 'power2.inOut',
+                          onComplete: () => {
+                            sphere.style.opacity = 0;
+                          }
+                      });
+                  }
                   }
                 });
               }
