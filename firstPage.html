@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>First Page Animation</title>
+  <title>Celestial Navigator</title>
   <style>
     body, html {
       margin: 0;
       padding: 0;
       overflow: hidden;
       background-color: #000;
-      color: #fff; /* Text color */
-      font-family: Arial, sans-serif;
+      background-image: url('wallpaper.jpg');
+      color: #fff;
     }
 
     .container {
@@ -29,14 +29,15 @@
     }
 
     #title {
-  position: absolute;
-  top: 20%; /* Position at 50% from the top */
-  left: 50%; /* Position at 50% from the left */
-  transform: translate(-50%, -50%); /* Center the text horizontally and vertically */
-  font-size: 70px;
-  font-family: 'Pacifico', cursive;
-  opacity: 0; /* Initially hidden */
-}
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 70px;
+      font-family: 'Times New Roman', cursive;
+      font-style: italic;
+      opacity: 0;
+    }
 
   </style>
 </head>
@@ -60,6 +61,7 @@
         { size: 3.59, texture: 'neptune.jpg' }
       ];
 
+
       planets.forEach((planet, index) => {
         const sphere = document.createElement('div');
         const size = planet.size * 30;
@@ -81,8 +83,8 @@
             const remainingSpace = window.innerHeight - sphere.getBoundingClientRect().bottom;
             const bounceAmplitude = Math.min(size * 2, remainingSpace);
             gsap.to(sphere, {
-              duration: 0.3,
-              y: `+=${bounceAmplitude}`,
+              duration: 0.5,
+              y: window.innerHeight - sphere.getBoundingClientRect().bottom,
               onComplete: () => {
                 gsap.to(sphere, {
                   duration: 0.2,
