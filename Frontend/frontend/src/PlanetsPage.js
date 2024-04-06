@@ -144,7 +144,7 @@ function Planets () {
         document.addEventListener('mousemove', onMouseMove, false);
         document.addEventListener('mousedown', onMouseDown, false);
         document.addEventListener('mouseup', onMouseUp, false);
-        document.addEventListener('wheel', onWheel, false); // Add wheel event listener for zooming
+        document.addEventListener('wheel', onWheel, false);
 
         function animate() {
             requestAnimationFrame(animate);
@@ -155,10 +155,10 @@ function Planets () {
 
         function rotatePlanetAroundSun(planet, daysFullRotation, initialPositioning) {
             let rotationAngle = 0;
-            const orbitalRadius = initialPositioning * 10 + 110; // Convert astronomical units to units in the scene
+            const orbitalRadius = initialPositioning * 10 + 110;
 
             function updatePosition() {
-                rotationAngle += (2 * Math.PI / daysFullRotation); // Update the rotation angle based on the number of days for a full rotation
+                rotationAngle += (2 * Math.PI / daysFullRotation);
 
                 const X = orbitalRadius * Math.cos(rotationAngle);
                 const Z = orbitalRadius * Math.sin(rotationAngle);
