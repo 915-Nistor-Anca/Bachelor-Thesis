@@ -31,7 +31,7 @@ input {
 }
 
 button {
-  width: 150px; /* Adjust width */
+  width: 150px;
   padding: 10px;
   background-color: #ccc;
   color: #000000;
