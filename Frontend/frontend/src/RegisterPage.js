@@ -6,6 +6,7 @@ function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [registrationSuccess, setRegistrationSuccess] = useState(false);
+    const [error, setError] = useState('');
 
     const handleUsernameChange = (event) => {
         setUsername(event.target.value);
@@ -28,7 +29,7 @@ function Register() {
             password: password
         };
         
-        fetch('http://127.0.0.1:8000/polaris/users/', {
+        fetch('http://127.0.0.1:8000/polaris/users/register/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -37,12 +38,14 @@ function Register() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to register');
+                return response.json().then(data => {
+                    throw new Error(data.error || 'Failed to register');
+                });
             }
             setRegistrationSuccess(true);
         })
         .catch(error => {
-            console.error('Registration error:', error);
+            setError(error.message); 
         });
     };
 
@@ -50,32 +53,34 @@ function Register() {
         <div className="register-container">
             <div className="register-box">
                 <h2 className="register-title">Register</h2>
-                {registrationSuccess && (
+                {registrationSuccess ? (
                     <p>Registration successful!</p>
+                ) : (
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            type="text"
+                            placeholder="Username"
+                            value={username}
+                            onChange={handleUsernameChange}
+                        />
+                        <input
+                            type="email"
+                            placeholder="Email"
+                            value={email}
+                            onChange={handleEmailChange}
+                        />
+                        <input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                        />
+                        <button type="submit">
+                            Register
+                        </button>
+                    </form>
                 )}
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        placeholder="Username"
-                        value={username}
-                        onChange={handleUsernameChange}
-                    />
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={handleEmailChange}
-                    />
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                    />
-                    <button type="submit">
-                        Register
-                    </button>
-                </form>
+                {error && <p className="error">{error}</p>}
             </div>
         </div>
     );

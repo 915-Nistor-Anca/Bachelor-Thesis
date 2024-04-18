@@ -1,38 +1,71 @@
 from django.http import HttpResponse
 from rest_framework import generics
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.models import User
-import json
 
 from polaris.models import User
 from polaris.serializers import UserSerializer
+from django.contrib.auth import authenticate
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
 
 
 def index(request):
     return HttpResponse("Polaris App.")
 
+
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-from django.contrib.auth import authenticate
-from django.http import JsonResponse
 
+@csrf_exempt
+def register(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data.get('username')
+        email = data.get('email')
+        password = data.get('password')
+
+        if User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'There is already a user with this username!'}, status=400)
+        elif User.objects.filter(email=email).exists():
+            return JsonResponse({'error': 'There is already a user which uses this email address!'}, status=400)
+
+        user = User.objects.create_user(username=username, email=email, password=password)
+        user.set_password(password)
+        user.save()
+
+        return JsonResponse({'message': 'User registered successfully!'}, status=201)
+
+    else:
+        return JsonResponse({'error': 'Method not allowed.'}, status=405)
+
+@csrf_exempt
 def login(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
+        data = json.loads(request.body)
+        email = data.get('email')
+        password = data.get('password')
+        print("email ", email, password)
         if not email or not password:
             return JsonResponse({'error': 'Email and password are required'}, status=400)
 
-        user = authenticate(request, email=email, password=password)
-
+        try:
+            user = User.objects.get(username=email)
+        except User.DoesNotExist:
+            return JsonResponse({'error': 'User with this email does not exist'}, status=401)
+        print("User with the given email exists.")
+        print(user.email, user.password)
+        user = authenticate(username=email, password=password)
+        # user = authenticate(email=email, password=password)
+        #print(email, password)
+        print(user)
         if user is not None:
             return JsonResponse({'message': 'Login successful'}, status=200)
         else:
