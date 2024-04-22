@@ -1,45 +1,47 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import './LoginPage.css';
 
+axios.defaults.xsrfCookieName = 'csrftoken';
+axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+axios.defaults.withCredentials = true;
+
+const client = axios.create({
+  baseURL: "http://127.0.0.1:8000/polaris/"
+})
+
 function LoginPage() {
-  const [email, setEmail] = useState('');
+  const [currentUser, setCurrentUser] = useState();
+  const [registrationToggle, setRegistrationToggle] = useState(false);
+
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const handleUsernameChange = (event) => {
+    setUsername(event.target.value);
   };
 
   const handlePasswordChange = (event) => {
     setPassword(event.target.value);
   };
-
-  function getCSRFToken() {
-    const csrfCookie = document.cookie.split('; ').find(cookie => cookie.startsWith('csrftoken='));
-    if (csrfCookie) {
-      return csrfCookie.split('=')[1];
-    }
-    return null;
-  }
   
 
   const handleSubmit = async (event) => {
     const user_info = {
-      email: email,
+      username: username,
       password: password
     }
     event.preventDefault();
 
 
     try {
-      const csrfToken = getCSRFToken();
       const response = await fetch('http://127.0.0.1:8000/polaris/users/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': csrfToken,
         },
         body: JSON.stringify(user_info),
       });
@@ -51,6 +53,7 @@ function LoginPage() {
       }
 
       setMessage(data.message);
+      console.log(data.message);
 
       navigate('/mainuserpage.html');
     } catch (error) {
@@ -66,9 +69,9 @@ function LoginPage() {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Email"
-            value={email}
-            onChange={handleEmailChange}
+            placeholder="Username"
+            value={username}
+            onChange={handleUsernameChange}
           />
           <input
             type="password"

@@ -50,26 +50,26 @@ def register(request):
 def login(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        email = data.get('email')
+        username = data.get('username')
         password = data.get('password')
-        print("email ", email, password)
-        if not email or not password:
+        print("username ", username, password)
+        if not username or not password:
             return JsonResponse({'error': 'Email and password are required'}, status=400)
 
         try:
-            user = User.objects.get(username=email)
+            user = User.objects.get(username=username)
         except User.DoesNotExist:
-            return JsonResponse({'error': 'User with this email does not exist'}, status=401)
-        print("User with the given email exists.")
+            return JsonResponse({'error': 'User with this username does not exist'}, status=401)
+        print("User with the given username exists.")
         print(user.email, user.password)
-        user = authenticate(username=email, password=password)
-        # user = authenticate(email=email, password=password)
-        #print(email, password)
+        user = authenticate(username=username, password=password)
+        # user = authenticate(username=username, password=password)
+        #print(username, password)
         print(user)
         if user is not None:
             return JsonResponse({'message': 'Login successful'}, status=200)
         else:
-            return JsonResponse({'error': 'Invalid email or password'}, status=401)
+            return JsonResponse({'error': 'Invalid username or password'}, status=401)
 
     else:
         return JsonResponse({'error': 'Method not allowed'}, status=405)
