@@ -50,7 +50,6 @@ function LoginPage() {
       console.log(data.message);
 
       if (response.status === 200) {
-        document.cookie = `user_id=${data.user_id}`;
         document.cookie = `username=${data.username}`;
         console.log(document.cookie);
 

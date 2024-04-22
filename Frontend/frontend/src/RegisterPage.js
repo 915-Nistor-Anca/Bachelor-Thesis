@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './RegisterPage.css';
+import { Link } from 'react-router-dom';
 
 function Register() {
     const [username, setUsername] = useState('');
@@ -54,7 +55,12 @@ function Register() {
             <div className="register-box">
                 <h2 className="register-title">Register</h2>
                 {registrationSuccess ? (
+                    <React.Fragment>
                     <p>Registration successful!</p>
+                    <p>
+                        <Link to="/login">Go to login page!</Link>
+                    </p>
+                </React.Fragment>
                 ) : (
                     <form onSubmit={handleSubmit}>
                         <input

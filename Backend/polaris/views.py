@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from rest_framework import generics
 
-from polaris.models import User
-from polaris.serializers import UserSerializer
+from polaris.models import User, Observation
+from polaris.serializers import UserSerializer, ObservationSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -22,6 +22,25 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class ObservationDetail(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ObservationSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Observation.objects.filter(user_id=user_id)
+
+class AllObservationList(generics.ListCreateAPIView):
+    queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+
+class ObservationList(generics.ListCreateAPIView):
+    queryset = Observation.objects.all()
+    serializer_class = ObservationSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Observation.objects.filter(user_id=user_id)
 
 
 @csrf_exempt
