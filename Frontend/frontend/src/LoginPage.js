@@ -7,13 +7,7 @@ axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
 axios.defaults.withCredentials = true;
 
-const client = axios.create({
-  baseURL: "http://127.0.0.1:8000/polaris/"
-})
-
 function LoginPage() {
-  const [currentUser, setCurrentUser] = useState();
-  const [registrationToggle, setRegistrationToggle] = useState(false);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -55,7 +49,14 @@ function LoginPage() {
       setMessage(data.message);
       console.log(data.message);
 
-      navigate('/mainuserpage.html');
+      if (response.status === 200) {
+        document.cookie = `user_id=${data.user_id}`;
+        document.cookie = `username=${data.username}`;
+        console.log(document.cookie);
+
+        setMessage(data.message);
+        navigate('/mainuserpage.html');
+      }
     } catch (error) {
       console.error('Login error:', error);
       setMessage(error.message || 'An error occurred'); 

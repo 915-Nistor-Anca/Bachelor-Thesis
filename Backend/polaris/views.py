@@ -67,7 +67,8 @@ def login(request):
         #print(username, password)
         print(user)
         if user is not None:
-            return JsonResponse({'message': 'Login successful'}, status=200)
+            return JsonResponse({'message': 'Login successful', 'user_id': user.id, 'username': user.username},
+                                status=200)
         else:
             return JsonResponse({'error': 'Invalid username or password'}, status=401)
 
