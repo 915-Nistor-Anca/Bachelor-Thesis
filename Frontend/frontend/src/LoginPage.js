@@ -51,10 +51,11 @@ function LoginPage() {
 
       if (response.status === 200) {
         document.cookie = `username=${data.username}`;
+        document.cookie = `user_id=${data.user_id}`;
         console.log(document.cookie);
 
         setMessage(data.message);
-        navigate('/mainuserpage.html');
+        navigate('/mainuserpage');
       }
     } catch (error) {
       console.error('Login error:', error);

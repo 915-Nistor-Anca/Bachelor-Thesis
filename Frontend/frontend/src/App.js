@@ -4,6 +4,9 @@ import FirstPage from './FirstPage';
 import Planets from './PlanetsPage';
 import Login from './LoginPage';
 import Register from './RegisterPage';
+import MainPage from './MainPage';
+import ObservationsPage from './ObservationsPage';
+import AddObservationPage from './AddObservationPage';
 
 function App() {
   return (
@@ -15,6 +18,9 @@ function App() {
           <Route path="/planets" element={<Planets />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
+          <Route path="/mainuserpage" element = {< MainPage/>} />
+          <Route path="/observationspage" element = {< ObservationsPage/>} />
+          <Route path="/addobservationspage" element = {< AddObservationPage/>} />
         </Routes>
       </Router> 
     </React.Fragment>
