@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MapComponent from './MapComponent'; // Replace with your map component
+import MapComponent from './MapComponent';
 
 function AddObservationPage() {
   const [targets, setTargets] = useState('');
@@ -12,7 +12,6 @@ function AddObservationPage() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
-    // Create observation object with form data
     const observation = {
       targets,
       observationTime,
@@ -23,7 +22,7 @@ function AddObservationPage() {
     };
 
     try {
-      // Send observation data to backend API endpoint
+      console.log(observation);
       const response = await fetch('http://127.0.0.1:8000/polaris/observations/', {
         method: 'POST',
         headers: {
@@ -35,12 +34,9 @@ function AddObservationPage() {
       if (!response.ok) {
         throw new Error('Failed to add observation');
       }
-
-      // Handle success (e.g., display success message, redirect user)
       console.log('Observation added successfully');
     } catch (error) {
       console.error('Error adding observation:', error);
-      // Handle error (e.g., display error message to user)
     }
   };
 
@@ -48,6 +44,7 @@ function AddObservationPage() {
     <div>
       <h1>Add Observation</h1>
       <form onSubmit={handleFormSubmit}>
+      <button type="submit">Submit</button>
         <label>
           Targets:
           <input type="text" value={targets} onChange={(e) => setTargets(e.target.value)} />
@@ -69,11 +66,18 @@ function AddObservationPage() {
           <textarea value={personalObservations} onChange={(e) => setPersonalObservations(e.target.value)} />
         </label>
         
-        {/* Map component for selecting location */}
+        {/* Pass setLocation function to MapComponent */}
         <MapComponent setLocation={setLocation} />
 
-        <button type="submit">Submit</button>
       </form>
+      {/* Display selected location */}
+      {location && (
+        <div>
+          <h3>Selected Location:</h3>
+          <p>Latitude: {location.latitude}</p>
+          <p>Longitude: {location.longitude}</p>
+        </div>
+      )}
     </div>
   );
 }

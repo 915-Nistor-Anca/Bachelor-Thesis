@@ -1,56 +1,58 @@
-import React, { useState, useEffect } from 'react';
+/* global google */
+import {
+    GoogleMap,
+    Marker,
+    useLoadScript,
+  } from "@react-google-maps/api";
+import { useState } from "react";
+import "./renderMap.css";
 
-function MapComponent({ setLocation }) {
-  const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
+const MapComponent = () => {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
+  });
+  const [mapRef, setMapRef] = useState(null);
+  const [selectedLocation, setSelectedLocation] = useState(null);
+  const [markers, setMarkers] = useState([
+    { address: "Address1", lat: 46.770439, lng: 23.591423 },
+  ]);
 
-  useEffect(() => {
-    // Load Google Maps API script
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCuP4cEWrfXsnR57lC3w3CIsolYV6K6Ebk&libraries=places`;
-    script.onload = initMap;
-    document.head.appendChild(script);
-
-    return () => {
-      document.head.removeChild(script);
-    };
-  }, []);
-
-  const initMap = () => {
-    const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
-      center: { lat: 0, lng: 0 },
-      zoom: 2,
-    });
-
-    setMap(mapInstance);
-
-    // Add click event listener to the map
-    mapInstance.addListener('click', handleMapClick);
+  const onMapLoad = (map) => {
+    setMapRef(map);
+    const bounds = new google.maps.LatLngBounds();
+    markers?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
+    map.fitBounds(bounds);
   };
 
-  const handleMapClick = (event) => {
-    const { latLng } = event;
-    const latitude = latLng.lat();
-    const longitude = latLng.lng();
-
-    // Update marker position
-    if (marker) {
-      marker.setPosition(latLng);
-    } else {
-      const markerInstance = new window.google.maps.Marker({
-        position: latLng,
-        map: map,
-        draggable: true,
-      });
-      setMarker(markerInstance);
-    }
-
-    // Update location state with latitude and longitude
-    console.log(latitude, longitude);
-    setLocation({ latitude, longitude });
+  const handleMapClick = (e) => {
+    const { latLng } = e;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+    setSelectedLocation({ latitude: lat, longitude: lng });
+    console.log(lat, lng);
+    setMarkers([{ address: `New Marker`, lat, lng }]);
   };
 
-  return <div id="map" style={{ width: '100%', height: '400px' }}></div>;
-}
+  return (
+    <div className="Map">
+      {!isLoaded ? (
+        <h1>Loading...</h1>
+      ) : (
+        <GoogleMap
+          mapContainerClassName="map-container"
+          onLoad={onMapLoad}
+          onDblClick={handleMapClick}
+        >
+          {markers.map(({ address, lat, lng }, ind) => (
+            <Marker
+              key={ind}
+              position={{ lat, lng }}
+            />
+          ))}
+        </GoogleMap>
+      )}
+    </div>
+  );
+};
 
 export default MapComponent;

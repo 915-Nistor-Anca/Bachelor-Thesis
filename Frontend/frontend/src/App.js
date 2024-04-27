@@ -7,6 +7,7 @@ import Register from './RegisterPage';
 import MainPage from './MainPage';
 import ObservationsPage from './ObservationsPage';
 import AddObservationPage from './AddObservationPage';
+import MapComponent from './MapComponent';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/mainuserpage" element = {< MainPage/>} />
           <Route path="/observationspage" element = {< ObservationsPage/>} />
           <Route path="/addobservationspage" element = {< AddObservationPage/>} />
+          <Route path="/mapcomponent" element = {< MapComponent/>} />
         </Routes>
       </Router> 
     </React.Fragment>

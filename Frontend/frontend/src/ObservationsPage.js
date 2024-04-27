@@ -34,6 +34,7 @@ function ObservationsPage() {
     return userCookie ? userCookie[1] : null;
   };
 
+
   return (
     <div>
       <h1>Observations Page</h1>
