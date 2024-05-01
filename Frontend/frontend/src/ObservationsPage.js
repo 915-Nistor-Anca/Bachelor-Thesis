@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
-
+import { useNavigate } from 'react-router-dom';
 function ObservationsPage() {
   const [observations, setObservations] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchObservations = async () => {
       const userId = getUserIdFromCookie();
       if (!userId) {
-        console.error('User ID cookie not found');
-        return;
-      }
+      console.error('User ID cookie not found');
+      navigate('/login');
+    }
     
       try {
         const response = await fetch(`http://127.0.0.1:8000/polaris/observations/${userId}/`);

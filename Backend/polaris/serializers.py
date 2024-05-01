@@ -11,4 +11,4 @@ class UserSerializer(serializers.ModelSerializer):
 class ObservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Observation
-        fields = ['id', 'user', 'targets', 'location', 'observation_time', 'sky_conditions', 'equipment', 'personal_observations']
+        fields = ['user', 'targets', 'location', 'observation_time', 'sky_conditions', 'equipment', 'personal_observations']

@@ -1,13 +1,9 @@
-/* global google */
-import {
-    GoogleMap,
-    Marker,
-    useLoadScript,
-  } from "@react-google-maps/api";
-import { useState } from "react";
+// MapComponent.js
+import React, { useState } from "react";
+import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import "./renderMap.css";
 
-const MapComponent = () => {
+const MapComponent = ({ onLocationChange }) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
   });
@@ -16,11 +12,13 @@ const MapComponent = () => {
   const [markers, setMarkers] = useState([
     { address: "Address1", lat: 46.770439, lng: 23.591423 },
   ]);
+  const [lat2, setLat2] = useState(0);
+  const [long2, setLong2] = useState(0);
 
   const onMapLoad = (map) => {
     setMapRef(map);
-    const bounds = new google.maps.LatLngBounds();
-    markers?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
+    const bounds = new window.google.maps.LatLngBounds();
+    markers.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
     map.fitBounds(bounds);
   };
 
@@ -28,9 +26,13 @@ const MapComponent = () => {
     const { latLng } = e;
     const lat = latLng.lat();
     const lng = latLng.lng();
+    setLat2(lat);
+    setLong2(lng);
     setSelectedLocation({ latitude: lat, longitude: lng });
-    console.log(lat, lng);
     setMarkers([{ address: `New Marker`, lat, lng }]);
+    if (onLocationChange) {
+      onLocationChange(lat, lng);
+    }
   };
 
   return (
@@ -43,11 +45,8 @@ const MapComponent = () => {
           onLoad={onMapLoad}
           onDblClick={handleMapClick}
         >
-          {markers.map(({ address, lat, lng }, ind) => (
-            <Marker
-              key={ind}
-              position={{ lat, lng }}
-            />
+          {markers.map(({ lat, lng }, ind) => (
+            <Marker key={ind} position={{ lat, lng }} />
           ))}
         </GoogleMap>
       )}

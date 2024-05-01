@@ -11,4 +11,4 @@ class Observation(models.Model):
     observation_time = models.DateTimeField()
     sky_conditions = models.CharField(max_length=100)
     equipment = models.CharField(max_length=100)
-    personal_observations = models.TextField()
+    personal_observations = models.CharField(max_length=100)
