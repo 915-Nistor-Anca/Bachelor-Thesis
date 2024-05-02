@@ -4,7 +4,37 @@ import { useNavigate } from 'react-router-dom';
 
 function AddObservationPage() {
   const navigate = useNavigate();
-  const locationInputGlobal = "Location";
+  const [equipmentOptions, setEquipmentOptions] = useState([]);
+
+  useEffect(() => {
+    const fetchEquipmentOptions = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/polaris/equipments/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error('Failed to fetch equipment options');
+        }
+  
+        const data = await response.json();
+        const options = data.map(option => option.name);
+  
+        setEquipmentOptions(options);
+      } catch (error) {
+        console.error('Error fetching equipment options:', error);
+      }
+    };
+
+    fetchEquipmentOptions();
+  }, []);
+  
+
+  const skyConditionsOptions = ['Clear', 'Partly Cloudy','Cloudy', 'Overcast', 'Foggy', 'Rainy', 'Snowy', 'Stormy', 'Windy', 'Hazy'];
+  
 
   const getUserIdFromCookie = () => {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
@@ -36,13 +66,27 @@ function AddObservationPage() {
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
+    const ids = [];
+    console.log(equipment);
+    console.log(equipmentOptions);
+    
+    equipment.forEach((itemName) => {
+      console.log(itemName);
+      const foundIndex = equipmentOptions.indexOf(itemName);
+      if (foundIndex !== -1) {
+        ids.push(foundIndex);
+      }
+    });
+    
+    console.log("IDS:", ids);
+    
 
     const observation = {
       user:getUserIdFromCookie(),
       targets,
       observation_time,
       sky_conditions,
-      equipment,
+      equipment:ids,
       personal_observations,
       location: locationString,
     };
@@ -65,7 +109,6 @@ function AddObservationPage() {
       const locationInput = document.getElementById('location-input');
       if (locationInput) {
         locationInput.value = `Latitude: ${location.latitude}, Longitude: ${location.longitude}`;
-        locationInputGlobal = locationInput.value;
       }
     } catch (error) {
       console.error('Error adding observation:', error);
@@ -87,12 +130,38 @@ function AddObservationPage() {
         </label>
         <label>
           Sky Conditions:
-          <input type="text" value={sky_conditions} onChange={(e) => setSkyConditions(e.target.value)} />
+          <select value={sky_conditions} onChange={(e) => setSkyConditions(e.target.value)}>
+            <option value="">Select Sky Conditions</option>
+            {skyConditionsOptions.map((condition, index) => (
+              <option key={index} value={condition}>{condition}</option>
+            ))}
+          </select>
         </label>
-        <label>
-          Equipment:
-          <input type="text" value={equipment} onChange={(e) => setEquipment(e.target.value)} />
-        </label>
+        <div>
+  <label>Equipment:</label>
+  <div>
+    {equipmentOptions.map((option, index) => (
+      <div key={index}>
+        <input
+          type="checkbox"
+          id={`equipment-${index}`}
+          name="equipment"
+          value={option}
+          checked={equipment.includes(option)}
+          onChange={(e) => {
+            const isChecked = e.target.checked;
+            setEquipment((prevEquipment) =>
+              isChecked
+                ? [...prevEquipment, option]
+                : prevEquipment.filter((item) => item !== option)
+            );
+          }}
+        />
+        <label htmlFor={`equipment-${index}`}>{option}</label>
+      </div>
+    ))}
+  </div>
+</div>
         <label>
           Personal Observations:
           <input type="text" value={personal_observations} onChange={(e) => setPersonalObservations(e.target.value)} />

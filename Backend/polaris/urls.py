@@ -12,4 +12,6 @@ urlpatterns = [
     path("observations/<int:user_id>/<int:pk>/", views.ObservationDetail.as_view()),
     path('observations/<int:user_id>/', views.ObservationList.as_view(), name='list-of-observations-of-a-user'),
     path('observations/', views.AllObservationList.as_view(), name='list-of-observations'),
+
+    path('equipments/', views.EquipmentList.as_view(), name='list-of-equipments')
 ]

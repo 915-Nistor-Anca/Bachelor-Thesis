@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from rest_framework import generics
 
-from polaris.models import User, Observation
-from polaris.serializers import UserSerializer, ObservationSerializer
+from polaris.models import User, Observation, Equipment
+from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -13,6 +13,9 @@ import json
 def index(request):
     return HttpResponse("Polaris App.")
 
+class EquipmentList(generics.ListCreateAPIView):
+    queryset = Equipment.objects.all()
+    serializer_class = EquipmentSerializer
 
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
