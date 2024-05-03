@@ -1,4 +1,3 @@
-// MapComponent.js
 import React, { useState } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import "./renderMap.css";
@@ -43,7 +42,7 @@ const MapComponent = ({ onLocationChange }) => {
         <GoogleMap
           mapContainerClassName="map-container"
           onLoad={onMapLoad}
-          onDblClick={handleMapClick}
+          onClick={handleMapClick}
         >
           {markers.map(({ lat, lng }, ind) => (
             <Marker key={ind} position={{ lat, lng }} />

@@ -1,11 +1,16 @@
 from rest_framework import serializers
 
-from polaris.models import User, Observation, Equipment
+from polaris.models import User, Observation, Equipment, SkyCondition
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Equipment
+        fields = ['name']
+
+class SkyConditionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SkyCondition
         fields = ['name']
 
 
