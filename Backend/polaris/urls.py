@@ -14,8 +14,9 @@ urlpatterns = [
     path('observations/', views.AllObservationList.as_view(), name='list-of-observations'),
 
     path('equipments/', views.EquipmentList.as_view(), name='list-of-equipments'),
-    path('skyconditions/', views.SkyConditionList.as_view(), name='list-of-skyconditions'),
-    path('skyconditions/<int:pk>/', views.SkyConditionDetail.as_view(), name='skycondition-detail'),
+    path('skyconditions/', views.SkyConditionList.as_view(), name='list-of-sky-conditions'),
+    path('skyconditions/<int:pk>/', views.SkyConditionDetail.as_view(), name='sky-condition-detail'),
+    path('equipments/<int:pk>/', views.EquipmentDetail.as_view(), name='equipment-detail'),
     path('get-sky-condition-id/<name>/', views.get_sky_condition_id, name='get_sky_condition_id'),
     path('get-equipment-id/<name>/', views.get_equipment_id, name='get_equipment_id')
 ]

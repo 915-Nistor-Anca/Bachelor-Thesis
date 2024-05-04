@@ -112,6 +112,10 @@ class SkyConditionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SkyCondition.objects.all()
     serializer_class = SkyConditionSerializer
 
+class EquipmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Equipment.objects.all()
+    serializer_class = EquipmentSerializer
+
 
 def get_sky_condition_id(request, name):
     sky_condition = SkyCondition.objects.get(name=name)

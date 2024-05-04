@@ -14,11 +14,17 @@ const MapComponent = ({ onLocationChange }) => {
   const [lat2, setLat2] = useState(0);
   const [long2, setLong2] = useState(0);
 
+  const europeBounds = {
+    north: 30,
+    south: 10.0,
+    west: 50.0,
+    east: 42.5
+  };
+
   const onMapLoad = (map) => {
     setMapRef(map);
-    const bounds = new window.google.maps.LatLngBounds();
-    markers.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
-    map.fitBounds(bounds);
+    map.fitBounds(europeBounds);
+    map.setOptions({ gestureHandling: "auto" });
   };
 
   const handleMapClick = (e) => {
