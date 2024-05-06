@@ -8,6 +8,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
         model = Equipment
         fields = ['name']
 
+
 class SkyConditionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SkyCondition
@@ -19,7 +20,8 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('username', 'email', 'password')
 
+
 class ObservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Observation
-        fields = ['user', 'targets', 'location', 'observation_time', 'sky_conditions', 'equipment', 'personal_observations']
+        fields = ['id', 'user', 'targets', 'location', 'observation_time', 'sky_conditions', 'equipment', 'personal_observations']

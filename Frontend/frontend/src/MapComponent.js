@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import "./renderMap.css";
 
-const MapComponent = ({ onLocationChange }) => {
+const MapComponent = ({ initialLocation, onLocationChange }) => {
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_GOOGLE_API_KEY,
   });
@@ -11,6 +11,7 @@ const MapComponent = ({ onLocationChange }) => {
   const [markers, setMarkers] = useState([
     { address: "Address1", lat: 46.770439, lng: 23.591423 },
   ]);
+
   const [lat2, setLat2] = useState(0);
   const [long2, setLong2] = useState(0);
 
@@ -18,8 +19,17 @@ const MapComponent = ({ onLocationChange }) => {
     north: 30,
     south: 10.0,
     west: 50.0,
-    east: 42.5
+    east: 42.5,
   };
+
+  useEffect(() => {
+    if (initialLocation) {
+      const [initialLat, initialLng] = initialLocation.split(";");
+      const lat = parseFloat(initialLat);
+      const lng = parseFloat(initialLng);
+      setMarkers([{ address: `New Marker`, lat, lng }]);
+    }
+  }, [initialLocation]);
 
   const onMapLoad = (map) => {
     setMapRef(map);

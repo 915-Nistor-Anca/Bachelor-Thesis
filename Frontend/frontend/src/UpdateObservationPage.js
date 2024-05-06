@@ -1,18 +1,55 @@
 import React, { useState, useEffect } from 'react';
 import MapComponent from './MapComponent';
-import { useNavigate, Link } from 'react-router-dom';
-import { Message } from 'rsuite';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import "./AddObservationPage.css";
 
-function AddObservationPage() {
+function UpdateObservationPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const observation = location.state?.observation;
+  console.log("UPDATE:", observation);
 
+  const formattedObservationTime = new Date(observation.observation_time).toISOString().slice(0, 16);
 
-  //getting equipment and sky condition data from the server
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [skyConditionsOptions, setSkyConditionsOptions] = useState([]);
+  const [selectedSkyCondition, setSelectedSkyCondition] = useState(observation.sky_conditions);
+  const [selectedEquipment, setSelectedEquipment] = useState([]);
+  const [targets, setTargets] = useState(observation.targets);
+  const [observationTime, setObservationTime] = useState(formattedObservationTime);
+  const [personal_observations, setPersonalObservations] = useState(observation.personal_observations);
+  const [locationData, setLocationData] = useState({ latitude: null, longitude: null });
+  const [locationString, setLocationString] = useState(observation.location);
+
+
+  useEffect(() => {
+    const fetchEquip = async () => {
+      try {
+        const all_names = [];
+        for (const idEquip of observation.equipment) {
+          console.log("ID EQUIPMENT:", idEquip);
+          const response = await fetch(`http://127.0.0.1:8000/polaris/equipments/${idEquip}/`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch equipment ID');
+          }
+          const data = await response.json();
+          const name = data.name;
+          all_names.push(name);
+          console.log("NAME: ", name);
+        }
+        console.log("all names: ", all_names);
+        setSelectedEquipment(all_names);
+      } catch (error) {
+        console.error('Error fetching equipment options:', error);
+      }
+    };
+  
+    fetchEquip();
+  }, []);
+  
+  
 
   useEffect(() => {
     const fetchEquipmentOptions = async () => {
@@ -23,14 +60,14 @@ function AddObservationPage() {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (!response.ok) {
           throw new Error('Failed to fetch equipment options');
         }
-  
+
         const data = await response.json();
         const options = data.map(option => option.name);
-  
+
         setEquipmentOptions(options);
       } catch (error) {
         console.error('Error fetching equipment options:', error);
@@ -39,7 +76,6 @@ function AddObservationPage() {
 
     fetchEquipmentOptions();
   }, []);
-  
 
   useEffect(() => {
     const fetchSkyConditions = async () => {
@@ -50,15 +86,16 @@ function AddObservationPage() {
             'Content-Type': 'application/json',
           },
         });
-  
+
         if (!response.ok) {
           throw new Error('Failed to fetch sky conditions options');
         }
-  
+
         const data = await response.json();
         const options = data.map(option => option.name);
-  
+
         setSkyConditionsOptions(options);
+
       } catch (error) {
         console.error('Error fetching sky conditions options:', error);
       }
@@ -66,10 +103,13 @@ function AddObservationPage() {
 
     fetchSkyConditions();
   }, []);
-  
 
+  useEffect(() => {
+    if (locationData.latitude !== null && locationData.longitude !== null) {
+      setLocationString(`${locationData.latitude};${locationData.longitude}`);
+    }
+  }, [locationData]);
 
-  //cookie 
   const getUserIdFromCookie = () => {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
     const userCookie = cookies.find(cookie => cookie[0] === 'user_id');
@@ -82,103 +122,101 @@ function AddObservationPage() {
       console.error('User ID cookie not found');
       navigate('/login');
     }
-  }, []); 
+  }, []);
 
 
-
-
-  const [targets, setTargets] = useState('');
-  const [observation_time, setObservationTime] = useState('');
-  const [sky_conditions, setSkyConditions] = useState('');
-  const [equipment, setEquipment] = useState('');
-  const [personal_observations, setPersonalObservations] = useState('');
-  const [location, setLocation] = useState({ latitude: null, longitude: null });
-  const [locationString, setLocationString] = useState('');
-
-  useEffect(() => {
-    if (location.latitude !== null && location.longitude !== null) {
-      setLocationString(`${location.latitude};${location.longitude}`);
+  useEffect(()=> {
+    const fetchSkyC = async () => {
+    try{
+      const response = await fetch(`http://127.0.0.1:8000/polaris/skyconditions/${observation.sky_conditions}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch equipment ID');
+        }
+        const data = await response.json();
+        const sky_c = data.name;
+        setSelectedSkyCondition(sky_c);
+        console.log("sky_c:", selectedSkyCondition);
     }
-  }, [location]);
-
+    catch (error) {
+      console.error('Error updating observation:', error);
+    }
+  }
+  fetchSkyC();
+  }, [])
   const handleFormSubmit = async (event) => {
     event.preventDefault();
     const equipmentIds = [];
-  
+
     try {
-      for (const itemName of equipment) {
+      for (const itemName of selectedEquipment) {
         const response = await fetch(`http://127.0.0.1:8000/polaris/get-equipment-id/${itemName}/`);
         if (!response.ok) {
           throw new Error('Failed to fetch equipment ID');
         }
         const data = await response.json();
         const eqId = data.id;
-        console.log('Selected equipment ID:', eqId);
         equipmentIds.push(eqId);
       }
-  
-      const observation = {
+
+      const response2 = await fetch(`http://127.0.0.1:8000/polaris/get-sky-condition-id/${selectedSkyCondition}/`);
+      if (!response2.ok) {
+        throw new Error('Failed to fetch sky condition ID');
+      }
+      const data = await response2.json();
+      const scId = data.id;
+      console.log("scId:", scId);
+
+      const observationData = {
         user: getUserIdFromCookie(),
         targets,
-        observation_time,
-        sky_conditions,
+        observation_time: observationTime,
+        sky_conditions: scId,
         equipment: equipmentIds,
         personal_observations,
         location: locationString,
       };
-  
-      const response = await fetch('http://127.0.0.1:8000/polaris/observations/', {
-        method: 'POST',
+
+      console.log("OBSERVATION BEFORE FETCHING:", observationData);
+      const response = await fetch(`http://127.0.0.1:8000/polaris/observations/${observation.id}/`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(observation),
+        body: JSON.stringify(observationData),
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to add observation');
+        throw new Error('Failed to update observation');
       }
-      console.log('Observation added successfully');
+      console.log('Observation updated successfully');
       setShowSuccessMessage(true);
       setShowErrorMessage(false);
-      // setTimeout(() => {
-      //   navigate('/observationspage');
-      // }, 3000);
-  
-      const locationInput = document.getElementById('location-input');
-      if (locationInput) {
-        locationInput.value = `Latitude: ${location.latitude}, Longitude: ${location.longitude}`;
-      }
     } catch (error) {
-      console.error('Error adding observation:', error);
+      console.error('Error updating observation:', error);
       setShowErrorMessage(true);
       setShowSuccessMessage(false);
     }
+
   };
-  
-  const [selectedSkyCondition, setSelectedSkyCondition] = useState('');
+
   const handleSkyConditionChange = async (event) => {
-    setSelectedSkyCondition(event.target.value);
     const selectedCondition = event.target.value;
-    console.log(selectedCondition);
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/polaris/get-sky-condition-id/${selectedCondition}/`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch sky condition ID');
-      }
-      const data = await response.json();
-      const skyConditionId = data.id;
-      console.log('Selected Sky Condition ID:', skyConditionId);
-      setSkyConditions(skyConditionId);
-    } catch (error) {
-      console.error('Error fetching sky condition ID:', error);
+    setSelectedSkyCondition(selectedCondition);
+  };
+
+  const handleEquipmentChange = (itemName, checked) => {
+    if (checked) {
+      setSelectedEquipment(prevSelected => [...prevSelected, itemName]);
+    } else {
+      setSelectedEquipment(prevSelected => prevSelected.filter(item => item !== itemName));
     }
   };
+  
 
   return (
     <div className="container-add-page">
       <div className="left">
-        <h1>Add Observation</h1>
+        <h1>Update Observation</h1>
         <form onSubmit={handleFormSubmit}>
           <div className="form-group">
             <label className="label-add-page">
@@ -190,7 +228,7 @@ function AddObservationPage() {
           <div className="form-group">
             <label className="label-add-page">
               Observation Time:
-              <input type="datetime-local" value={observation_time} onChange={(e) => setObservationTime(e.target.value)} className="input-add-page" />
+              <input type="datetime-local" value={observationTime} onChange={(e) => setObservationTime(e.target.value)} className="input-add-page" />
             </label>
           </div>
 
@@ -198,9 +236,9 @@ function AddObservationPage() {
             <label className="label-add-page">
               Sky Conditions:
               <select value={selectedSkyCondition} onChange={handleSkyConditionChange} className="input-add-page">
-                <option value="">Select Sky Conditions</option>
+                <option value={observation.sky_conditions}>Select Sky Conditions</option>
                 {skyConditionsOptions.map((condition, index) => (
-                  <option key={index} value={condition.id}>{condition}</option>
+                  <option key={index} value={condition}>{condition}</option>
                 ))}
               </select>
             </label>
@@ -218,15 +256,8 @@ function AddObservationPage() {
                     id={`equipment-${index}`}
                     name="equipment"
                     value={option}
-                    checked={equipment.includes(option)}
-                    onChange={(e) => {
-                      const isChecked = e.target.checked;
-                      setEquipment((prevEquipment) =>
-                        isChecked
-                          ? [...prevEquipment, option]
-                          : prevEquipment.filter((item) => item !== option)
-                      );
-                    }}
+                    checked={selectedEquipment.includes(option)}
+                    onChange={(e) => handleEquipmentChange(option, e.target.checked)}
                     className="checkbox-add-page"
                   />
                   <label htmlFor={`equipment-${index}`} className="label-add-page">{option}</label>
@@ -234,38 +265,41 @@ function AddObservationPage() {
               ))}
             </div>
           </div>
+
+          <button type="submit" className="button-add-page">Update</button>
         </form>
       </div>
 
       <div className="right">
-      <form onSubmit={handleFormSubmit}>
-        <div className="form-group">
-          <label className="label-add-page">
-            Location:
-            <input type="text" value={locationString} readOnly className="input-add-page" />
-          </label>
+        <form onSubmit={handleFormSubmit}>
+          <div className="form-group">
+            <label className="label-add-page">
+              Location:
+              <input type="text" value={locationString} readOnly className="input-add-page" />
+            </label>
           </div>
 
           <div className="form-group">
-        <div className="map-container-add-page">
-          <MapComponent
-            onLocationChange={(lat, lng) => {
-              console.log("Latitude:", lat);
-              console.log("Longitude:", lng);
-              setLocation({ latitude: lat, longitude: lng });
-            }}
-          />
-        </div>
-        </div>
-        
-        <div className="form-group">
+            <div className="map-container-add-page">
+            <MapComponent
+              initialLocation={locationString}
+              onLocationChange={(lat, lng) => {
+                console.log("Latitude:", lat);
+                console.log("Longitude:", lng);
+                setLocationData({ latitude: lat, longitude: lng });
+              }}
+            />
+            </div>
+          </div>
+          
+          <div className="form-group">
             <label className="label-add-page">
               Personal Observations:
               <input type="text" value={personal_observations} onChange={(e) => setPersonalObservations(e.target.value)} className="input-add-page" />
             </label>
           </div>
 
-          <button type="submit" className="button-add-page">Submit</button>
+          <button type="submit" className="button-add-page">Update</button>
           {showSuccessMessage && (
             <div style={{ marginTop: '20px', color: 'green' }}>
               Observation added successfully! <Link to="/observationspage">View Observations</Link>
@@ -274,11 +308,10 @@ function AddObservationPage() {
           {showErrorMessage && (
             <div style={{ marginTop: '20px', color: 'red' }}>Failed to add observation. Please try again.</div>
           )}
-          </form>
+        </form>
       </div>
-      
     </div>
   );
 }
 
-export default AddObservationPage;
+export default UpdateObservationPage;

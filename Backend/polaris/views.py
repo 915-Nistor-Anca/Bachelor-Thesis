@@ -35,11 +35,13 @@ class UserList(generics.ListCreateAPIView):
 
 
 class ObservationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
 
-    def get_queryset(self):
-        user_id = self.kwargs['user_id']
-        return Observation.objects.filter(user_id=user_id)
+
+class EquipmentDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Equipment.objects.all()
+    serializer_class = EquipmentSerializer
 
 
 class AllObservationList(generics.ListCreateAPIView):
@@ -112,10 +114,6 @@ class SkyConditionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SkyCondition.objects.all()
     serializer_class = SkyConditionSerializer
 
-class EquipmentDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Equipment.objects.all()
-    serializer_class = EquipmentSerializer
-
 
 def get_sky_condition_id(request, name):
     sky_condition = SkyCondition.objects.get(name=name)
@@ -129,3 +127,4 @@ def get_equipment_id(request, name):
     equipment_id = equipment.id
     print(f"The ID of '{name}' is {equipment_id}")
     return JsonResponse({'id': equipment_id})
+

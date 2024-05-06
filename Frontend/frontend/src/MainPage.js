@@ -22,7 +22,8 @@ function MainPage() {
     <div>
       <h1>Main Page</h1>
       <div>
-        <Link to="/observationspage">Observations</Link>
+        <div><Link to="/observationspage">Observations</Link></div>
+        <div><Link to="/addobservationspage">Add observation</Link></div>
       </div>
     </div>
   );

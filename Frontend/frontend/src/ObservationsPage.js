@@ -18,7 +18,7 @@ function ObservationsPage() {
       }
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/polaris/observations/${userId}/`);
+        const response = await fetch(`http://127.0.0.1:8000/polaris/observations-user/${userId}/`);
         if (!response.ok) {
           throw new Error('Failed to fetch observations');
         }
@@ -67,11 +67,26 @@ function ObservationsPage() {
   };
 
   const handleDelete = async (id) => {
-    console.log('Deleting observation with ID:', id);
+    console.log(id);
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/polaris/observations/${id}`, {
+        method: 'DELETE',
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete observation');
+      }
+      setObservations(observations.filter(observation => observation.id !== id));
+      
+      console.log('Observation deleted successfully:', id);
+    } catch (error) {
+      console.error('Error deleting observation:', error);
+    }
   };
 
-  const handleUpdate = async (id) => {
-    console.log('Updating observation with ID:', id);
+  const handleUpdate = async (observation) => {
+    console.log("HANDLE UPDATE:", observation);
+    navigate('/updateobservationpage', { state: { observation } });
   };
 
   return (
@@ -91,7 +106,8 @@ function ObservationsPage() {
             </div>
             <div className="observation-buttons">
               <button className='button-observations-page' onClick={() => handleDelete(observation.id)}>Delete</button>
-              <button className='button-observations-page' onClick={() => handleUpdate(observation.id)}>Update</button>
+              <button className='button-observations-page' onClick={() => { console.log(observation); handleUpdate(observation); }}>Update</button>
+
             </div>
           </div>
         ))}
