@@ -1,8 +1,11 @@
+from datetime import datetime
+
 from django.http import HttpResponse
 from rest_framework import generics
 
-from polaris.models import User, Observation, Equipment, SkyCondition
-from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer
+from polaris.models import User, Observation, Equipment, SkyCondition, Star
+from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
+    StarSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -12,6 +15,11 @@ import json
 
 def index(request):
     return HttpResponse("Polaris App.")
+
+
+class StarList(generics.ListCreateAPIView):
+    queryset = Star.objects.all()
+    serializer_class = StarSerializer
 
 
 class EquipmentList(generics.ListCreateAPIView):
@@ -113,6 +121,10 @@ def login(request):
 class SkyConditionDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = SkyCondition.objects.all()
     serializer_class = SkyConditionSerializer
+
+class StarDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Star.objects.all()
+    serializer_class = StarSerializer
 
 
 def get_sky_condition_id(request, name):

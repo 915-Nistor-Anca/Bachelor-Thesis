@@ -6,7 +6,38 @@ function ObservationsPage() {
   const [observations, setObservations] = useState([]);
   const [skyConditionsMap, setSkyConditionsMap] = useState({});
   const [equipmentMap, setEquipmentMap] = useState({});
+  const [selectedContinent, setSelectedContinent] = useState('All');
   const navigate = useNavigate();
+
+
+
+  function getContinent(latitude, longitude) {
+    if (latitude >= 0 && latitude <= 90 && longitude >= -170 && longitude <= -50) {
+      return 'North America';
+    } else if (latitude >= -60 && latitude <= 15 && longitude >= -90 && longitude <= -30) {
+      return 'South America';
+    } else if (latitude >= 30 && latitude <= 75 && longitude >= -30 && longitude <= 40) {
+      return 'Europe';
+    } else if (latitude >= -10 && latitude <= 30 && longitude >= 30 && longitude <= 180) {
+      return 'Asia';
+    } else if (latitude >= -55 && latitude <= 11 && longitude >= -20 && longitude <= 51) {
+      return 'Africa';
+    } else if (latitude >= -55 && latitude <= -10 && longitude >= 105 && longitude <= 155) {
+      return 'Australia';
+    } else {
+      return 'Unknown';
+    }
+  }
+
+  const filterObservationsByContinent = (observation) => {
+    if (selectedContinent === 'All') {
+      return true;
+    }
+    const latitude = observation.location.split(';')[0];
+    const longitude = observation.location.split(';')[1];
+    const continent = getContinent(latitude, longitude);
+    return continent === selectedContinent;
+  };
 
   useEffect(() => {
     const fetchObservations = async () => {
@@ -92,9 +123,21 @@ function ObservationsPage() {
   return (
     <div>
     <h1>Observations Page</h1>
+    <div>
+        <label htmlFor="continent-filter">Filter by continent:</label>
+        <select id="continent-filter" value={selectedContinent} onChange={(e) => setSelectedContinent(e.target.value)}>
+          <option value="All">All continents</option>
+          <option value="North America">North America</option>
+          <option value="South America">South America</option>
+          <option value="Europe">Europe</option>
+          <option value="Asia">Asia</option>
+          <option value="Africa">Africa</option>
+          <option value="Australia">Australia</option>
+        </select>
+      </div>
     <div className="ObservationsPage">
       <div className="observation-list">
-        {observations.map(observation => (
+        {observations.filter(filterObservationsByContinent).map(observation => (
           <div className="observation" key={observation.id}>
             <div className="observation-content">
               <p><strong>Targets:</strong> {observation.targets}</p>

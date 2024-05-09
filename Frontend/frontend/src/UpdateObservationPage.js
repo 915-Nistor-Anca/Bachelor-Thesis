@@ -265,8 +265,6 @@ function UpdateObservationPage() {
               ))}
             </div>
           </div>
-
-          <button type="submit" className="button-add-page">Update</button>
         </form>
       </div>
 

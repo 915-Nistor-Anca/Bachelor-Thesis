@@ -24,6 +24,7 @@ function MainPage() {
       <div>
         <div><Link to="/observationspage">Observations</Link></div>
         <div><Link to="/addobservationspage">Add observation</Link></div>
+        <div><Link to="/starpage">Star page</Link></div>
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ import ObservationsPage from './ObservationsPage';
 import AddObservationPage from './AddObservationPage';
 import MapComponent from './MapComponent';
 import UpdateObservationPage from './UpdateObservationPage';
+import StarPage from './StarPage';
+import ProfilePage from './ProfilePage';
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
           <Route path="/addobservationspage" element = {< AddObservationPage/>} />
           <Route path="/mapcomponent" element = {< MapComponent/>} />
           <Route path="/updateobservationpage" element = {< UpdateObservationPage/>} />
+          <Route path="/starpage" element = {< StarPage/>} />
+          <Route path="/profile" element = {< ProfilePage/>} />
         </Routes>
       </Router> 
     </React.Fragment>

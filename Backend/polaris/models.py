@@ -25,3 +25,18 @@ class Observation(models.Model):
     sky_conditions = models.ForeignKey(SkyCondition, on_delete=models.CASCADE)
     equipment = models.ManyToManyField(Equipment)
     personal_observations = models.CharField(max_length=100)
+
+class Star(models.Model):
+    proper_name = models.CharField(max_length=255)
+    designation = models.CharField(max_length=255)
+    hip = models.CharField(max_length=255)
+    bayer = models.CharField(max_length=255)
+    origin = models.CharField(max_length=255)
+    ethnic_cultural_group = models.CharField(max_length=255, blank=True)
+    reference = models.CharField(max_length=255)
+    additional_info = models.CharField(max_length=255)
+    approval_status = models.CharField(max_length=255)
+    approval_date = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.proper_name
