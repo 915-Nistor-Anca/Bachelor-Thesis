@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from polaris.models import User, Observation, Equipment, SkyCondition, Star
 
+
+# class ImageSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = Image
+#         fields = '__all__'
+
 class StarSerializer(serializers.ModelSerializer):
     class Meta:
         model = Star

@@ -1,5 +1,6 @@
 from django.urls import path
-
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 urlpatterns = [
@@ -22,4 +23,7 @@ urlpatterns = [
     path('get-sky-condition-id/<name>/', views.get_sky_condition_id, name='get_sky_condition_id'),
     path('get-equipment-id/<name>/', views.get_equipment_id, name='get_equipment_id'),
     path('get-equipment-id/<name>/', views.get_equipment_id, name='get_equipment_id'),
-]
+    # path('images/', views.ImageList.as_view(), name='list-of-images'),
+    # path('images/<int:pk>', views.ImageDetail.as_view(), name='image-detail'),
+    # path('images/<name>/', views.get_image, name='get_image')
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

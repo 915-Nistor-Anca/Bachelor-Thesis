@@ -1,8 +1,12 @@
 from datetime import datetime
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
+from django.shortcuts import get_object_or_404
 from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+from Backend import settings
 from polaris.models import User, Observation, Equipment, SkyCondition, Star
 from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
     StarSerializer
@@ -12,6 +16,21 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 
+from django.conf import settings
+import os
+# from polaris.models import Image
+# def get_image(request, name):
+#     print("GET IMAGE")
+#     image_path = os.path.join(settings.MEDIA_ROOT, name)
+#     image_path = image_path.replace("media", "media/images")
+#     image_path = image_path.replace('/', '\\')
+#     print("IMAGE PATH:", image_path)
+#     if os.path.exists(image_path):
+#         print("the path exists: ", image_path)
+#         with open(image_path, 'rb') as f:
+#             return HttpResponse(f.read(), content_type='image/jpeg')
+#     else:
+#         return HttpResponse(status=404)
 
 def index(request):
     return HttpResponse("Polaris App.")
@@ -45,6 +64,12 @@ class UserList(generics.ListCreateAPIView):
 class ObservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Observation.objects.all()
     serializer_class = ObservationSerializer
+
+
+# class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Image.objects.all()
+#     serializer_class = ImageSerializer
+#
 
 
 class EquipmentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -140,3 +165,7 @@ def get_equipment_id(request, name):
     print(f"The ID of '{name}' is {equipment_id}")
     return JsonResponse({'id': equipment_id})
 
+
+# class ImageList(generics.ListCreateAPIView):
+#     queryset = Image.objects.all()
+#     serializer_class = ImageSerializer

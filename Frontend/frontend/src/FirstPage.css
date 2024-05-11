@@ -57,6 +57,10 @@ body, html {
   font-size: 15px;
 }
 
+.login-button:hover {
+  background-color: #313232;
+}
+
 
 #title {
   position: absolute;
