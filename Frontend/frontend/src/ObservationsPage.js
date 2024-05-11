@@ -121,9 +121,10 @@ function ObservationsPage() {
   };
 
   return (
+    <div className="observations-page-container">
     <div>
-    <h1>Observations Page</h1>
-    <div>
+      {/* <h1>Observations Page</h1> */}
+      <div>
         <label htmlFor="continent-filter">Filter by continent:</label>
         <select id="continent-filter" value={selectedContinent} onChange={(e) => setSelectedContinent(e.target.value)}>
           <option value="All">All continents</option>
@@ -155,6 +156,7 @@ function ObservationsPage() {
           </div>
         ))}
       </div>
+    </div>
     </div>
     </div>
   );

@@ -1,12 +1,23 @@
 .profile-container {
     font-family: 'Times New Roman', Times, serif;
     max-width: 600px;
-    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     margin: 20px auto;
+  }
+  
+  .first-part > .profile-container {
+    padding: 1px;
+    flex: 1;
+    /* background-color: aqua; */
+    max-height: 200px;
+  }
+  
+  .second-part {
+    flex: 3;
+    /* background-color: chartreuse; */
   }
   
   .title {
@@ -51,7 +62,6 @@
     height: 150px; 
     border-radius: 50%; 
     object-fit: cover; 
-    margin-bottom: 10px;
   }
   
   .username {

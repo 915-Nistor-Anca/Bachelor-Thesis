@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './ProfilePage.css'; // Import CSS file for styling
-import astronomerImage from './astronomer_profile.jpeg'; // Import the image file
+import './ProfilePage.css'; 
+import astronomerImage from './astronomer_profile.jpeg';
+import ObservationsPage from './ObservationsPage';
 
 const ProfilePage = () => {
   const [userData, setUserData] = useState({});
@@ -122,63 +123,72 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="profile-container">
-      <div className="profile-info">
-        <div className="profile-image-container">
-          <img src={astronomerImage} alt="Astronomer" className="profile-image" />
-        </div>
-        <h1 className="title">{userData.username}</h1>
-        {editMode && (
-          <form onSubmit={handleSubmit}>
-            <p className="text"> {userData.email}</p>
-            <button className='button' onClick={handleAddObservationClick}>Add Observation</button>
-            <button className="button" onClick={handleEditClick}>Edit Profile</button>
-            <button className="button" onClick={handleStatisticsClick}>Statistics</button>
-            <label className="label">
-              Username:
-              <input
-                className="input"
-                type="text"
-                value={newUsername}
-                onChange={handleUsernameChange}
-              />
-            </label>
-            <br />
-            <label className="label">
-              Email:
-              <input
-                className="input"
-                type="email"
-                value={newEmail}
-                onChange={handleEmailChange}
-              />
-            </label>
-            <br />
-            <button className="button" type="submit">Save Changes</button>
-          </form>
-        )}
-        {!editMode && (
-          <div>
-            <p className="text"> {userData.email}</p>
-            <button className='button' onClick={handleAddObservationClick}>Add Observation</button>
-            <button className="button" onClick={handleEditClick}>Edit Profile</button>
-            <button className="button" onClick={handleStatisticsClick}>Statistics</button>
-            {/* {showSuccessMessage && (
-              <div style={{ marginTop: '20px', color: 'green' }}>
-                Profile updated successfully!
-              </div>
-            )} */}
-            {showStatistics && (
-              <div className="statistics">
-                <h2>Statistics</h2>
-                <p>Number of Observations: {observationsNumber}</p>
+    <div>
+      <div className="profile-container">
+        <div className='first-part'>
+          <div className="profile-info">
+            <div className="profile-image-container">
+              <img src={astronomerImage} alt="Astronomer" className="profile-image" />
+            </div>
+            <h1 className="title">{userData.username}</h1>
+            {editMode && (
+              <form onSubmit={handleSubmit}>
+                <p className="text"> {userData.email}</p>
+                <button className='button' onClick={handleAddObservationClick}>Add Observation</button>
+                <button className="button" onClick={handleEditClick}>Edit Profile</button>
+                <button className="button" onClick={handleStatisticsClick}>Statistics</button>
+                <label className="label">
+                  Username:
+                  <input
+                    className="input"
+                    type="text"
+                    value={newUsername}
+                    onChange={handleUsernameChange}
+                  />
+                </label>
+                <br />
+                <label className="label">
+                  Email:
+                  <input
+                    className="input"
+                    type="email"
+                    value={newEmail}
+                    onChange={handleEmailChange}
+                  />
+                </label>
+                <br />
+                <button className="button" type="submit">Save Changes</button>
+              </form>
+            )}
+            {!editMode && (
+              <div>
+                <p className="text"> {userData.email}</p>
+                <button className='button' onClick={handleAddObservationClick}>Add Observation</button>
+                <button className="button" onClick={handleEditClick}>Edit Profile</button>
+                <button className="button" onClick={handleStatisticsClick}>Statistics</button>
+                {/* {showSuccessMessage && (
+                  <div style={{ marginTop: '20px', color: 'green' }}>
+                    Profile updated successfully!
+                  </div>
+                )} */}
+                {showStatistics && (
+                  <div className="statistics">
+                    <h2>Statistics</h2>
+                    <p>Number of Observations: {observationsNumber}</p>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
+        </div>
+      
+      <div className='second-part'>
+        <ObservationsPage />
+      </div>
       </div>
     </div>
   );
-};
+  
+}
 
 export default ProfilePage;
