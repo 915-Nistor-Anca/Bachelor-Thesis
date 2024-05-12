@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from polaris.models import User, Observation, Equipment, SkyCondition, Star
+from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile
 
 
 # class ImageSerializer(serializers.ModelSerializer):
@@ -29,8 +29,13 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ('id', 'username', 'email', 'password')
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
 
 class ObservationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Observation
-        fields = ['id', 'user', 'targets', 'location', 'observation_time', 'sky_conditions', 'equipment', 'personal_observations']
+        fields = ['id', 'user', 'targets', 'location', 'observation_time', 'sky_conditions', 'equipment', 'personal_observations', 'privacy']

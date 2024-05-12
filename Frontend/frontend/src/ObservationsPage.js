@@ -147,6 +147,7 @@ function ObservationsPage() {
               <p><strong>Sky Conditions:</strong> {skyConditionsMap[observation.sky_conditions]}</p>
               <p><strong>Equipment:</strong> {observation.equipment.map(id => equipmentMap[id]).join(', ')}</p>
               <p><strong>Personal Observations:</strong> {observation.personal_observations}</p>
+              <p><strong>Privacy:</strong>{observation.privacy === 1 ? "Private" : "Public"}</p>
             </div>
             <div className="observation-buttons">
               <button className='button-observations-page' onClick={() => handleDelete(observation.id)}>Delete</button>

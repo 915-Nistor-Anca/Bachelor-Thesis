@@ -12,6 +12,9 @@ import UpdateObservationPage from './UpdateObservationPage';
 import StarPage from './StarPage';
 import ProfilePage from './ProfilePage';
 import ImageComponent from './ImageComponent';
+import CommunityPage from './CommunityPage';
+import FollowingPage from './FollowingPage';
+import FollowersPage from './FollowersPage';
 
 function App() {
   return (
@@ -31,6 +34,9 @@ function App() {
           <Route path="/starpage" element = {< StarPage/>} />
           <Route path="/profile" element = {< ProfilePage/>} />
           <Route path="/image" element = {< ImageComponent/>} />
+          <Route path="/following" element = {< FollowingPage/>} />
+          <Route path="/followers" element = {< FollowersPage/>} />
+          <Route path="/community" element = {< CommunityPage/>} />
         </Routes>
       </Router> 
     </React.Fragment>

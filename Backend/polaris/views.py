@@ -7,9 +7,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from Backend import settings
-from polaris.models import User, Observation, Equipment, SkyCondition, Star
+from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile
 from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
-    StarSerializer
+    StarSerializer, UserProfileSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -56,10 +56,20 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = UserSerializer
 
 
+
+class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
+    lookup_field = 'user_id'
+
+
 class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class UserProfileList(generics.ListCreateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileSerializer
 
 class ObservationDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Observation.objects.all()
@@ -164,6 +174,17 @@ def get_equipment_id(request, name):
     equipment_id = equipment.id
     print(f"The ID of '{name}' is {equipment_id}")
     return JsonResponse({'id': equipment_id})
+
+
+def get_followers(request, id):
+    try:
+        followers_profiles = UserProfile.objects.filter(following__id=id)
+        follower_ids = [profile.user.id for profile in followers_profiles]
+
+        return JsonResponse({'followers': follower_ids})
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'error': 'User profile does not exist'}, status=404)
+
 
 
 # class ImageList(generics.ListCreateAPIView):

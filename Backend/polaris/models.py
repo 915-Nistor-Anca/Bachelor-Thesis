@@ -1,6 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from Backend.backend.models import User
+
+
 # class Image(models.Model):
 #     title = models.CharField(max_length=100)
 #     image = models.ImageField(upload_to='images/')
@@ -10,6 +13,24 @@ from django.db import models
 
 class User(AbstractUser):
     pass
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    following = models.ManyToManyField(User, related_name='followers')
+
+    def follow(self, user):
+        if user != self.user:
+            self.following.add(user)
+
+    def unfollow(self, user):
+        self.following.remove(user)
+
+    def is_following(self, user):
+        return self.following.filter(pk=user.pk).exists()
+
+
+    def __str__(self):
+        return self.user.username
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -32,6 +53,7 @@ class Observation(models.Model):
     sky_conditions = models.ForeignKey(SkyCondition, on_delete=models.CASCADE)
     equipment = models.ManyToManyField(Equipment)
     personal_observations = models.CharField(max_length=100)
+    privacy = models.IntegerField(default=1)
 
 class Star(models.Model):
     proper_name = models.CharField(max_length=255)

@@ -22,6 +22,11 @@ function UpdateObservationPage() {
   const [personal_observations, setPersonalObservations] = useState(observation.personal_observations);
   const [locationData, setLocationData] = useState({ latitude: null, longitude: null });
   const [locationString, setLocationString] = useState(observation.location);
+  const [observationPrivacy, setObservationPrivacy] = useState(observation.privacy);
+
+  const toggleObservationPrivacy = () => {
+    setObservationPrivacy(prevPrivacy => (prevPrivacy === 1 ? 0 : 1));
+  };
 
 
   useEffect(() => {
@@ -174,6 +179,7 @@ function UpdateObservationPage() {
         equipment: equipmentIds,
         personal_observations,
         location: locationString,
+        privacy: observationPrivacy
       };
 
       console.log("OBSERVATION BEFORE FETCHING:", observationData);
@@ -294,6 +300,18 @@ function UpdateObservationPage() {
             <label className="label-add-page">
               Personal Observations:
               <input type="text" value={personal_observations} onChange={(e) => setPersonalObservations(e.target.value)} className="input-add-page" />
+            </label>
+          </div>
+
+          <div className="form-group">
+            <label className="label-add-page">
+              Privacy:
+              <input
+                type="checkbox"
+                checked={observationPrivacy === 1}
+                onChange={toggleObservationPrivacy}
+              />
+              <span className={`privacy-point ${observationPrivacy === 1 ? 'private' : 'public'}`} />
             </label>
           </div>
 

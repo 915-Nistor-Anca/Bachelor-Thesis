@@ -4,7 +4,7 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap; 
-  justify-content: space-between; 
+  justify-content: center; 
   gap: 20px;
 }
 
@@ -53,4 +53,8 @@
   height: 100vh;
   overflow-y: auto; 
   margin-left: 125px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
 }
