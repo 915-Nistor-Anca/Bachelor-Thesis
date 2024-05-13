@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate, Switch } from "react-router-dom";
 import FirstPage from './FirstPage';
 import Planets from './PlanetsPage';
 import Login from './LoginPage';
@@ -15,6 +15,7 @@ import ImageComponent from './ImageComponent';
 import CommunityPage from './CommunityPage';
 import FollowingPage from './FollowingPage';
 import FollowersPage from './FollowersPage';
+import FriendPage from './FriendPage';
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
           <Route path="/following" element = {< FollowingPage/>} />
           <Route path="/followers" element = {< FollowersPage/>} />
           <Route path="/community" element = {< CommunityPage/>} />
+          <Route path="/user/:username" element={<FriendPage/>} />
         </Routes>
       </Router> 
     </React.Fragment>

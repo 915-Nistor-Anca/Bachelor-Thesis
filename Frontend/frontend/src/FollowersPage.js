@@ -49,6 +49,7 @@ const FollowersPage = () => {
                 const followersUsersData = await Promise.all(followersUserDataPromises);
                 
                 setUsersData(followersUsersData);
+                console.log(followersUsersData);
 
                 const followingIds = new Set(followingData.following);
                 setUsersData(followersUsersData.map(user => ({
@@ -63,7 +64,32 @@ const FollowersPage = () => {
         fetchUserData();
     }, []);
 
-    const handleButtonClick = () => {
+    const handleButtonClick = async (userId, following) => {
+        try {
+            console.log("following:", following);
+            const currentUserId = getUserIdFromCookie();
+            console.log(currentUserId, userId);
+            const endpoint = following ? `http://127.0.0.1:8000/polaris/unfollow/${currentUserId}/${userId}` : `http://127.0.0.1:8000/polaris/follow/${currentUserId}/${userId}`;
+            const response = await fetch(endpoint);
+    
+            if (!response.ok) {
+                throw new Error('Failed to update follow status.');
+            }
+    
+            const updatedUsersData = usersData.map(user => {
+                if (user.id === userId) {
+                    return { ...user, following: !following };
+                }
+                return user;
+            });
+            setUsersData(updatedUsersData);
+        } catch (error) {
+            console.error('Error updating follow status:', error);
+        }
+    };
+    
+    const redirectToUserProfile = (username) => {
+        navigate(`/user/${username}`);
     };
 
     return (
@@ -72,7 +98,9 @@ const FollowersPage = () => {
             <ul>
                 {usersData.map((userData, index) => (
                     <li key={index}>
-                        <strong>Username:</strong> {userData.username}, <strong>Email:</strong> {userData.email}
+                        <strong>Username:</strong> 
+                        <a href="#" onClick={() => redirectToUserProfile(userData.username)}>{userData.username}</a>, 
+                        <strong>Email:</strong> {userData.email}
                         <button onClick={() => handleButtonClick(userData.id, userData.following)}>
                             {userData.following ? "Unfollow" : "Follow"}
                         </button>

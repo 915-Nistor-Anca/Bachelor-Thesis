@@ -175,6 +175,10 @@ def get_equipment_id(request, name):
     print(f"The ID of '{name}' is {equipment_id}")
     return JsonResponse({'id': equipment_id})
 
+def get_user_id(request, username):
+    user = User.objects.get(username=username)
+    return JsonResponse({'username': user.username, 'id': user.id, 'email': user.email})
+
 
 def get_followers(request, id):
     try:
@@ -190,3 +194,20 @@ def get_followers(request, id):
 # class ImageList(generics.ListCreateAPIView):
 #     queryset = Image.objects.all()
 #     serializer_class = ImageSerializer
+
+
+def follow_user(request, from_user_id, to_user_id):
+    from_user = get_object_or_404(UserProfile, user_id=from_user_id)
+    to_user_profile = get_object_or_404(UserProfile, user_id=to_user_id)
+
+    from_user.follow(to_user_profile.user)
+    print("Following users:", from_user.following.all())
+    return JsonResponse({'success': True})
+
+def unfollow_user(request, from_user_id, to_user_id):
+    from_user = get_object_or_404(UserProfile, user_id=from_user_id)
+    to_user_profile = get_object_or_404(UserProfile, user_id=to_user_id)
+
+    from_user.unfollow(to_user_profile.user)
+    print("Following users:", from_user.following.all())
+    return JsonResponse({'success': True})
