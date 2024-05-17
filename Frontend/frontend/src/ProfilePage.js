@@ -214,6 +214,10 @@ const ProfilePage = () => {
 
   const lastThreeObservations = observations.slice(-3);
 
+  const redirectToFollowers = (username) => {
+    navigate(`/followers/${username}`);
+};
+
   return (
     <div className='all-profile-page'>
       <div className="profile-container">
@@ -266,7 +270,8 @@ const ProfilePage = () => {
                   <div className="statistics">
                     <h2>Statistics</h2>
                     <p>Number of observations: {observationsNumber}</p>
-                    <p><Link to="/followers">Followers: {followers.length}</Link></p>
+                    {/* <p><Link to="/followers">Followers: {followers.length}</Link></p> */}
+                    <a onClick={() => redirectToFollowers(userData.username)}>Followers: {followers.length}</a>
                     <p><Link to="/following">Following: {following.length}</Link></p>
                   </div>
                 )}

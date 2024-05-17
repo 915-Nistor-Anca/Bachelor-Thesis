@@ -1,29 +1,59 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const FollowersPage = () => {
+    const { username } = useParams();
     const navigate = useNavigate();
     const [followersUsers, setFollowersUsers] = useState([]);
     const [followingUsers, setFollowingUsers] = useState([]);
     const [usersData, setUsersData] = useState([]);
+    const [userId, setUserId] = useState(null);
+    const [loggedInUserId, setLoggedInUserId] = useState(null);
 
     const getUserIdFromCookie = () => {
         const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
         const userCookie = cookies.find(cookie => cookie[0] === 'user_id');
         return userCookie ? userCookie[1] : null;
     };
+
+    useEffect(() => {
+        const loggedInId = getUserIdFromCookie();
+        if (!loggedInId) {
+            console.error('User ID cookie not found');
+            navigate('/login');
+            return;
+        }
+        setLoggedInUserId(loggedInId);
+    }, [navigate]);
+
     
 
     useEffect(() => {
+        const fetchUserId = async () => {
+            try {
+                const response = await fetch(`http://127.0.0.1:8000/polaris/get-user-id/${username}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user ID.');
+                }
+                const data = await response.json();
+                setUserId(data.id);
+            } catch (error) {
+                console.error('Error fetching user ID:', error);
+            }
+        };
+
+        fetchUserId();
+    }, [username, navigate]);
+
+
+    
+
+    useEffect(() => {
+        if (!userId) return;
+
         const fetchUserData = async () => {
             try {
-                const userId = getUserIdFromCookie();
-                if (!userId) {
-                    console.error('User ID cookie not found');
-                    navigate('/login');
-                    return;
-                }
-
+                const loggedInUserId = getUserIdFromCookie();
                 const response1 = await fetch(`http://127.0.0.1:8000/polaris/get-followers/${userId}`);
                 if (!response1.ok) {
                     throw new Error('Failed to fetch followers users.');
@@ -48,9 +78,6 @@ const FollowersPage = () => {
 
                 const followersUsersData = await Promise.all(followersUserDataPromises);
                 
-                setUsersData(followersUsersData);
-                console.log(followersUsersData);
-
                 const followingIds = new Set(followingData.following);
                 setUsersData(followersUsersData.map(user => ({
                     ...user,
@@ -62,14 +89,14 @@ const FollowersPage = () => {
         };
 
         fetchUserData();
-    }, []);
+    }, [userId]);
 
     const handleButtonClick = async (userId, following) => {
         try {
-            console.log("following:", following);
-            const currentUserId = getUserIdFromCookie();
-            console.log(currentUserId, userId);
-            const endpoint = following ? `http://127.0.0.1:8000/polaris/unfollow/${currentUserId}/${userId}` : `http://127.0.0.1:8000/polaris/follow/${currentUserId}/${userId}`;
+            const loggedInUserId = getUserIdFromCookie();
+            const endpoint = following 
+                ? `http://127.0.0.1:8000/polaris/unfollow/${loggedInUserId}/${userId}`
+                : `http://127.0.0.1:8000/polaris/follow/${loggedInUserId}/${userId}`;
             const response = await fetch(endpoint);
     
             if (!response.ok) {
@@ -99,7 +126,7 @@ const FollowersPage = () => {
                 {usersData.map((userData, index) => (
                     <li key={index}>
                         <strong>Username:</strong> 
-                        <a href="#" onClick={() => redirectToUserProfile(userData.username)}>{userData.username}</a>, 
+                        <a onClick={() => redirectToUserProfile(userData.username)}>{userData.username}</a>, 
                         <strong>Email:</strong> {userData.email}
                         <button onClick={() => handleButtonClick(userData.id, userData.following)}>
                             {userData.following ? "Unfollow" : "Follow"}

@@ -36,7 +36,7 @@ function App() {
           <Route path="/profile" element = {< ProfilePage/>} />
           <Route path="/image" element = {< ImageComponent/>} />
           <Route path="/following" element = {< FollowingPage/>} />
-          <Route path="/followers" element = {< FollowersPage/>} />
+          <Route path="/followers/:username" element = {< FollowersPage/>} />
           <Route path="/community" element = {< CommunityPage/>} />
           <Route path="/user/:username" element={<FriendPage/>} />
         </Routes>
