@@ -24,7 +24,7 @@ function UpdateObservationPage() {
   const [locationString, setLocationString] = useState(observation.location);
   const [observationPrivacy, setObservationPrivacy] = useState(observation.privacy);
 
-  const toggleObservationPrivacy = () => {
+  const changeObservationPrivacy = () => {
     setObservationPrivacy(prevPrivacy => (prevPrivacy === 1 ? 0 : 1));
   };
 
@@ -309,7 +309,7 @@ function UpdateObservationPage() {
               <input
                 type="checkbox"
                 checked={observationPrivacy === 1}
-                onChange={toggleObservationPrivacy}
+                onChange={changeObservationPrivacy}
               />
               <span className={`privacy-point ${observationPrivacy === 1 ? 'private' : 'public'}`} />
             </label>

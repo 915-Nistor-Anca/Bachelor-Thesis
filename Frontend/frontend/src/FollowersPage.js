@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import "./FollowingPage.css";
 
 const FollowersPage = () => {
     const { username } = useParams();
@@ -120,20 +121,34 @@ const FollowersPage = () => {
     };
 
     return (
-        <div>
+        <div className="following-page">
             <h1>Followers</h1>
-            <ul>
-                {usersData.map((userData, index) => (
-                    <li key={index}>
-                        <strong>Username:</strong> 
-                        <a onClick={() => redirectToUserProfile(userData.username)}>{userData.username}</a>, 
-                        <strong>Email:</strong> {userData.email}
-                        <button onClick={() => handleButtonClick(userData.id, userData.following)}>
-                            {userData.following ? "Unfollow" : "Follow"}
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Follow/Unfollow</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {usersData.map((userData, index) => (
+                        <tr key={index}>
+                            <td>
+                                <a onClick={() => redirectToUserProfile(userData.username)}>
+                                    {userData.username}
+                                </a>
+                            </td>
+                            <td>{userData.email}</td>
+                            <td>
+                                <button onClick={() => handleButtonClick(userData.id, userData.following)}>
+                                    {userData.following ? "Unfollow" : "Follow"}
+                                </button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     );
 };

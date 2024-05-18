@@ -94,6 +94,11 @@ function AddObservationPage() {
   const [personal_observations, setPersonalObservations] = useState('');
   const [location, setLocation] = useState({ latitude: null, longitude: null });
   const [locationString, setLocationString] = useState('');
+  const [observationPrivacy, setObservationPrivacy] = useState(0);
+
+  const changeObservationPrivacy = () => {
+    setObservationPrivacy(prevPrivacy => (prevPrivacy === 1 ? 0 : 1));
+  };
 
   useEffect(() => {
     if (location.latitude !== null && location.longitude !== null) {
@@ -125,6 +130,7 @@ function AddObservationPage() {
         equipment: equipmentIds,
         personal_observations,
         location: locationString,
+        privacy: observationPrivacy
       };
   
       const response = await fetch('http://127.0.0.1:8000/polaris/observations/', {
@@ -262,6 +268,18 @@ function AddObservationPage() {
             <label className="label-add-page">
               Personal Observations:
               <input type="text" value={personal_observations} onChange={(e) => setPersonalObservations(e.target.value)} className="input-add-page" />
+            </label>
+          </div>
+
+          <div className="form-group">
+            <label className="label-add-page">
+              Privacy:
+              <input
+                type="checkbox"
+                checked={observationPrivacy === 1}
+                onChange={changeObservationPrivacy}
+              />
+              <span className={`privacy-point ${observationPrivacy === 1 ? 'private' : 'public'}`} />
             </label>
           </div>
 

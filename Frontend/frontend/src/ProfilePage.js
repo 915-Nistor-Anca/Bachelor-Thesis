@@ -218,6 +218,10 @@ const ProfilePage = () => {
     navigate(`/followers/${username}`);
 };
 
+const redirectToFollowing = (username) => {
+  navigate(`/following/${username}`);
+};
+
   return (
     <div className='all-profile-page'>
       <div className="profile-container">
@@ -271,8 +275,9 @@ const ProfilePage = () => {
                     <h2>Statistics</h2>
                     <p>Number of observations: {observationsNumber}</p>
                     {/* <p><Link to="/followers">Followers: {followers.length}</Link></p> */}
-                    <a onClick={() => redirectToFollowers(userData.username)}>Followers: {followers.length}</a>
-                    <p><Link to="/following">Following: {following.length}</Link></p>
+                    <a onClick={() => redirectToFollowers(userData.username)}>Followers: {followers.length}; </a>
+                    {/* <p><Link to="/following">Following: {following.length}</Link></p> */}
+                    <a onClick={() => redirectToFollowing(userData.username)}>Following: {following.length}</a>
                   </div>
                 )}
               </div>
@@ -290,6 +295,7 @@ const ProfilePage = () => {
             <p><strong>Sky Conditions:</strong> {skyConditionsMap[observation.sky_conditions]}</p>
             <p><strong>Equipment:</strong> {observation.equipment.map(id => equipmentMap[id]).join(', ')}</p>
             <p><strong>Personal Observations:</strong> {observation.personal_observations}</p>
+            <p><strong>Privacy:</strong> {observation.privacy === 1 ? 'Private' : 'Public'}</p>
           </div>
           </div>
         ))}

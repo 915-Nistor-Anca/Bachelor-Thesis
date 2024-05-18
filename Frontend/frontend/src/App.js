@@ -16,6 +16,7 @@ import CommunityPage from './CommunityPage';
 import FollowingPage from './FollowingPage';
 import FollowersPage from './FollowersPage';
 import FriendPage from './FriendPage';
+import FeedPage from './FeedPage';
 
 function App() {
   return (
@@ -35,10 +36,11 @@ function App() {
           <Route path="/starpage" element = {< StarPage/>} />
           <Route path="/profile" element = {< ProfilePage/>} />
           <Route path="/image" element = {< ImageComponent/>} />
-          <Route path="/following" element = {< FollowingPage/>} />
+          <Route path="/following/:username" element = {< FollowingPage/>} />
           <Route path="/followers/:username" element = {< FollowersPage/>} />
           <Route path="/community" element = {< CommunityPage/>} />
           <Route path="/user/:username" element={<FriendPage/>} />
+          <Route path ="/feed" element= {<FeedPage/>}/>
         </Routes>
       </Router> 
     </React.Fragment>
