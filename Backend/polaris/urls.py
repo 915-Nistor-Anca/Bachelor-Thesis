@@ -2,6 +2,7 @@ from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from .views import get_best_observation_times, lunar_eclipse_prediction, solar_eclipse_prediction
 
 urlpatterns = [
     path("", views.index, name="index"),
@@ -32,4 +33,9 @@ urlpatterns = [
     # path('images/<name>/', views.get_image, name='get_image')
     path('follow/<int:from_user_id>/<int:to_user_id>/', views.follow_user, name='follow_user'),
     path('unfollow/<int:from_user_id>/<int:to_user_id>/', views.unfollow_user, name='unfollow_user'),
+    path('get-best-observation-times/<str:latitude>/<str:longitude>/<str:planet_name>/<int:number_of_days>/', get_best_observation_times),
+    path('lunar-eclipse-prediction/<latitude>/<longitude>/', lunar_eclipse_prediction, name='lunar_eclipse_prediction'),
+    path('solar-eclipse-prediction/<latitude>/<longitude>/', solar_eclipse_prediction, name='solar_eclipse_prediction'),
+    path('events/', views.EventList.as_view(), name='list-of-events'),
+    path('events/<int:pk>/', views.EventDetail.as_view(), name='event-detail'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

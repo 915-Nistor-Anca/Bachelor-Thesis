@@ -1,15 +1,14 @@
 from datetime import datetime
 
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from Backend import settings
-from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile
+from skyfield.api import load, Topos
+from skyfield.almanac import find_discrete, risings_and_settings, oppositions_conjunctions, moon_phases
+from datetime import timedelta
+from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event
 from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
-    StarSerializer, UserProfileSerializer
+    StarSerializer, UserProfileSerializer, EventSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -118,6 +117,10 @@ def register(request):
         user.set_password(password)
         user.save()
 
+        user_profile = UserProfile.objects.create(user=user)
+        user_profile.save()
+        print(user_profile)
+
         return JsonResponse({'message': 'User registered successfully!'}, status=201)
 
     else:
@@ -211,3 +214,161 @@ def unfollow_user(request, from_user_id, to_user_id):
     from_user.unfollow(to_user_profile.user)
     print("Following users:", from_user.following.all())
     return JsonResponse({'success': True})
+
+
+def get_best_observation_times(request, latitude, longitude, planet_name, number_of_days):
+    try:
+        if float(latitude) >= 0:
+            hemisphere = " N"
+        else:
+            hemisphere = " S"
+
+        observer_lat = latitude + hemisphere
+
+
+        if float(longitude) >= 0:
+            hemisphere = " E"
+        else:
+            hemisphere = " W"
+
+        observer_lon = longitude + hemisphere
+
+        eph = load('ephemeris_data_file.bsp')
+        planet = eph[planet_name.upper()]
+        observer_location = Topos(observer_lat, observer_lon)
+
+        ts = load.timescale()
+        t0 = ts.now()
+        t1 = ts.utc(t0.utc_datetime() + timedelta(days=number_of_days))
+
+        f = risings_and_settings(eph, planet, observer_location)
+        rise_set_times = find_discrete(t0, t1, f)
+        oppositions_f = oppositions_conjunctions(eph, planet)
+        opposition_times, events = find_discrete(t0, t1, oppositions_f)
+
+        def is_good_observation_time(time):
+            if not any(
+                    abs((time.utc_datetime() - oppo_time.utc_datetime()).days) < 15 for oppo_time in opposition_times):
+                return False
+
+            phase_times, phases = find_discrete(t0, t1, moon_phases(eph))
+            if any(abs((time.utc_datetime() - phase_time.utc_datetime()).days) < 3 and phase > 0.75 for
+                   phase_time, phase in
+                   zip(phase_times, phases)):
+                return False
+
+            return True
+
+        good_times = [t.utc_strftime('%Y-%m-%d %H:%M:%S') for t, updown in zip(*rise_set_times) if
+                      updown and is_good_observation_time(t)]
+
+        response_data = {
+            'latitude': observer_lat,
+            'longitude': observer_lon,
+            'planet': planet_name,
+            'observation_times': good_times
+        }
+
+        return JsonResponse(response_data)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+from datetime import datetime, timedelta
+import ephem
+
+def lunar_eclipse_prediction(request, latitude, longitude):
+    try:
+        # Convert latitude and longitude to strings
+        observer_latitude = str(latitude)
+        observer_longitude = str(longitude)
+
+        # Initialize start and end time
+        curtime = datetime(2020, 1, 1, 0, 0, 0)
+        endtime = datetime(2030, 12, 31, 23, 59, 59)
+
+        # Initialize Moon, Sun, and observer
+        moon = ephem.Moon()
+        sun = ephem.Sun()
+        observer = ephem.Observer()
+
+        # Set observer's latitude and longitude
+        observer.lat = observer_latitude  # Latitude of the observing location
+        observer.lon = observer_longitude  # Longitude of the observing location
+        observer.elevation = 0  # Place the observer at sea level
+        observer.pressure = 0  # Disable atmospheric refraction
+
+        eclipse_times = []
+
+        # Loop every hour
+        while curtime <= endtime:
+            observer.date = curtime
+
+            # Compute the positions of the Sun and the Moon relative to the observer
+            moon.compute(observer)
+            sun.compute(observer)
+
+            # Calculate the separation between the Moon and the Sun, convert it from radians to degrees
+            sep = abs(float(ephem.separation(moon, sun)) / 0.01745329252 - 180)
+
+            # Eclipse occurs if the separation is less than 0.9°
+            if sep < 0.9:
+                eclipse_times.append(curtime.strftime('%Y/%m/%d %H:%M:%S'))
+                # An eclipse cannot happen more than once in a day, so skip 24 hours when an eclipse is found
+                curtime += timedelta(days=1)
+            else:
+                # Advance an hour if eclipse is not found
+                curtime += timedelta(hours=1)
+
+        return JsonResponse({'eclipse_times': eclipse_times})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+def solar_eclipse_prediction(request, latitude, longitude):
+    curtime = datetime(2024, 1, 1, 0, 0, 0)        # start time
+    endtime = datetime(2030, 12, 31, 23, 59, 59)   # end time
+    moon = ephem.Moon()
+    sun = ephem.Sun()
+    observer = ephem.Observer()
+    observer.lat, observer.lon = str(latitude), str(longitude)
+    observer.elevation = 0        # assuming the observer is at sea level
+    observer.pressure = 0         # disable refraction
+
+    eclipses = []
+
+    while curtime <= endtime:
+        observer.date = curtime.strftime('%Y/%m/%d %H:%M:%S')
+
+        # Compute the position of the sun and the moon with respect to the observer
+        moon.compute(observer)
+        sun.compute(observer)
+
+        # Calculate separation between the moon and the sun, convert it from radians to degrees
+        sep = abs((float(ephem.separation(moon, sun)) / 0.01745329252))
+
+        # A solar eclipse happens if Sun-Earth-Moon alignment is <1.5976°
+        if sep < 1.59754941:
+            eclipses.append({
+                'date': curtime.strftime('%Y/%m/%d %H:%M:%S'),
+                'separation': sep
+            })
+            # Skip 24 hours when an eclipse is found
+            curtime += timedelta(days=1)
+        else:
+            # Advance five minutes if an eclipse is not found
+            curtime += timedelta(minutes=5)
+
+    return JsonResponse(eclipses, safe=False)
+
+
+class EventList(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+
+class EventDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+

@@ -52,7 +52,7 @@ class Observation(models.Model):
     observation_time = models.DateTimeField()
     sky_conditions = models.ForeignKey(SkyCondition, on_delete=models.CASCADE)
     equipment = models.ManyToManyField(Equipment)
-    personal_observations = models.CharField(max_length=100)
+    personal_observations = models.CharField(max_length=300)
     privacy = models.IntegerField(default=1)
 
 class Star(models.Model):
@@ -69,3 +69,17 @@ class Star(models.Model):
 
     def __str__(self):
         return self.proper_name
+
+
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    organizer = models.ForeignKey(User, related_name='organized_events', on_delete=models.CASCADE)
+    participants = models.ManyToManyField(User, related_name='events_participating', blank=True)
+    location_latitude = models.FloatField()
+    location_longitude = models.FloatField()
+    start_time = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

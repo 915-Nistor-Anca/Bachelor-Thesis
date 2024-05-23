@@ -1,0 +1,90 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000;
+  background-image: url('D:\Bachelor-Thesis\Frontend\frontend\public\images\wallpaper.jpg');
+  color: #fff;
+}
+
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sphere {
+  border-radius: 50%;
+  margin: 1px;
+}
+
+.buttons {
+  position: absolute;
+  bottom: 35px;
+  right: 35px;
+  display: none;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.login-button,
+.continue-button {
+  display: block;
+  padding: 20px 10px;
+  background-color: #fff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.login-button {
+  background-color: transparent;
+  color: #FFF;
+  border: 2px solid #fff;
+  border-radius: 20px;
+}
+
+.continue-button {
+  text-decoration: underline;
+  background: none;
+  color: #FFF;
+  font-size: 15px;
+}
+
+.login-button:hover {
+  background-color: #313232;
+}
+
+
+#title {
+  position: absolute;
+  top: 20%;
+  left: 75%;
+  transform: translate(-50%, -50%);
+  font-size: 95px;
+  font-family: 'Times New Roman', cursive;
+  font-style: italic;
+  opacity: 0;
+  background-image: url('D:\Bachelor-Thesis\Frontend\frontend\public\images\textTexture.jpg');
+  background-size: cover;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+#quote {
+  position: absolute;
+  top: 30%;
+  right: 5%;
+  opacity: 0;
+  font-size: 24px;
+  color: #fff;
+  font-style: italic;
+  text-align: center;
+}
