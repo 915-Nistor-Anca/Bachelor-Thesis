@@ -15,6 +15,19 @@ function PlanEventPage() {
     solarEclipse: false,
     lunarEclipse: false
   });
+  const [selectedPlanets, setSelectedPlanets] = useState([]);
+  const [months, setMonths] = useState(1);
+  const [time, setTime] = useState('05:40:00');
+  const [showFinalData, setShowFinalData] = useState(false);
+  const [showMonths, setShowMonths] = useState(false);
+  const [showTime, setShowTime] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [events, setEvents] = useState([]);
+
+  const handleTimeChange = (newTime) => {
+    setTime(newTime);
+    console.log(time);
+  };
 
   const handleLocationOption = () => {
     setShowLocationOptions(true);
@@ -24,25 +37,48 @@ function PlanEventPage() {
     setShowTargetsOptions(true);
   };
 
-  const handlePlanetsOption = () => {
+  const handleCheckButton = () => {
+    setShowFinalData(true);
+  }
+
+  const handleShowMonths = () => {
+    setShowMonths(true);
+  }
+
+  const handleConfirmTargets = async () => {
+    const days = months * 30;
     if (selectedTargets.planetObservation) {
       setShowPlanetsOptions(true);
-    } else {
-      setShowPlanetsOptions(false);
     }
+    setShowTime(true);
   };
-  
 
-  useEffect(() => {
-    if (location.latitude !== null && location.longitude !== null) {
-      setLocationString(`${location.latitude};${location.longitude}`);
-    }
-  }, [location]);
+  const handlePlanetSelection = (planet) => {
+    setSelectedPlanets(prevSelectedPlanets =>
+      prevSelectedPlanets.includes(planet)
+        ? prevSelectedPlanets.filter(p => p !== planet)
+        : [...prevSelectedPlanets, planet]
+    );
+  };
 
   const getUserIdFromCookie = () => {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
     const userCookie = cookies.find(cookie => cookie[0] === 'user_id');
     return userCookie ? userCookie[1] : null;
+  };
+
+  const fetchObservationData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/polaris/get-best-observation-times-and-lunar-eclipse/${location.latitude}/${location.longitude}/${selectedPlanets.join(',').toLowerCase()}/${months * 30}/${time}`
+      );
+      const data = await response.json();
+      setEvents(data.events);
+    } catch (error) {
+      console.error('Error fetching observation data:', error);
+    }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -56,6 +92,12 @@ function PlanEventPage() {
     };
     fetchObservations();
   }, [navigate]);
+
+  useEffect(() => {
+    if (location.latitude !== null && location.longitude !== null) {
+      setLocationString(`${location.latitude};${location.longitude}`);
+    }
+  }, [location]);
 
   return (
     <div className="plan-event-page">
@@ -77,6 +119,7 @@ function PlanEventPage() {
           <button onClick={handleLocationOption} className="plan-observation-button">Plan observation</button>
         </React.Fragment>
       )}
+
       {showLocationOptions && !showTargetsOptions && (
         <div className="observation-options">
           <h2>Start planning your event!</h2>
@@ -97,58 +140,137 @@ function PlanEventPage() {
           <button onClick={handleTargetsOption} className="plan-observation-button">Choose selected location</button>
         </div>
       )}
-      {showTargetsOptions && (
-        <div className="observation-options">
-          <h2>Select Observation Options</h2>
-          <p>Select your observation targets:</p>
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedTargets.planetObservation}
-              onChange={(e) => setSelectedTargets({ ...selectedTargets, planetObservation: e.target.checked })}
-            />
-            Find best time for observing a planet
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedTargets.solarEclipse}
-              onChange={(e) => setSelectedTargets({ ...selectedTargets, solarEclipse: e.target.checked })}
-            />
-            Next solar eclipse
-          </label>
-          <br />
-          <label>
-            <input
-              type="checkbox"
-              checked={selectedTargets.lunarEclipse}
-              onChange={(e) => setSelectedTargets({ ...selectedTargets, lunarEclipse: e.target.checked })}
-            />
-            Next lunar eclipse
-          </label>
-          <button onClick={handlePlanetsOption} className="plan-observation-button">Choose selected location</button>
+
+      {showTargetsOptions && !showFinalData && (
+        <div>
+          <div className="observation-options">
+            <h2>Select Observation Options</h2>
+            <p>Select your observation targets:</p>
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedTargets.planetObservation}
+                onChange={(e) => setSelectedTargets({ ...selectedTargets, planetObservation: e.target.checked })}
+              />
+              Find best time for observing a planet
+            </label>
+            <br />
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedTargets.solarEclipse}
+                onChange={(e) => setSelectedTargets({ ...selectedTargets, solarEclipse: e.target.checked })}
+              />
+              Next solar eclipse
+            </label>
+            <br />
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedTargets.lunarEclipse}
+                onChange={(e) => setSelectedTargets({ ...selectedTargets, lunarEclipse: e.target.checked })}
+              />
+              Next lunar eclipse
+            </label>
+          </div>
+          <button onClick={handleShowMonths} className="plan-observation-button">Choose targets and number of months</button>
         </div>
       )}
-      {showPlanetsOptions && (
-        <div className="planet-options">
-            <h2>Select Planet</h2>
-            <select>
-            <option value="mercury">Mercury</option>
-            <option value="venus">Venus</option>
-            <option value="mars">Mars</option>
-            <option value="jupiter">Jupiter</option>
-            <option value="saturn">Saturn</option>
-            <option value="uranus">Uranus</option>
-            <option value="neptune">Neptune</option>
-            <option value="pluto">Pluto</option>
-            </select>
-            <label htmlFor="days">Days in advance:</label>
-            <input type="number" id="days" name="days" min="1" max="365" defaultValue="1" />
-            {/* <button onClick={handleFetchBestObservationTimes}>Fetch Best Observation Times</button> */}
-        </div>
-)}
 
+      {showMonths && !showFinalData && (
+        <div>
+          <label htmlFor="days">The event will be planned in the next:</label>
+          <input 
+            type="number" 
+            id="days" 
+            name="days" 
+            min="1" 
+            max="24" 
+            defaultValue="1" 
+            onChange={(e) => setMonths(e.target.value)} 
+          />
+          <span> months</span>
+          <button onClick={handleConfirmTargets} className="plan-observation-button">Choose targets and number of months</button>
+        </div>
+      )}
+
+      {showPlanetsOptions && !showFinalData && (
+        <div className="planet-options">
+          <h2>Select Planets</h2>
+          <div className="planet-bubbles">
+            {['Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn', 'Uranus', 'Neptune', 'Pluto'].map((planet) => (
+              <div
+                key={planet}
+                className={`planet-bubble ${selectedPlanets.includes(planet) ? 'selected' : ''}`}
+                onClick={() => handlePlanetSelection(planet)}
+              >
+                {planet}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {showTime && !showFinalData && (
+        <div className="planet-options">
+          <h1>At what time would you like to do the event? The time will be used approximately for a better recommendation.</h1>
+          <div>
+            <h2>Select Time</h2>
+            <label htmlFor="time">Choose the time:</label>
+            <input
+              type="time"
+              id="time"
+              name="time"
+              defaultValue="05:40:00"
+              onChange={(e) => handleTimeChange(e.target.value)}
+            />
+          </div>
+          <button onClick={handleCheckButton} className="plan-observation-button">Check</button>
+        </div>
+      )}
+
+      {showFinalData && (
+        <div>
+          <h1>The final data</h1>
+          <p>Latitude: {location.latitude}</p>
+          <p>Longitude: {location.longitude}</p>
+          <p>Selected Targets:</p>
+          <ul>
+            {Object.entries(selectedTargets).map(([target, isSelected]) => (
+              isSelected && <li key={target}>{target}</li>
+            ))}
+          </ul>
+          {selectedPlanets.length > 0 && (
+            <div>
+              <p>Selected Planets:</p>
+              <ul>
+                {selectedPlanets.map((planet) => (
+                  <li key={planet}>{planet}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+          <p>Selected Time: {time}</p>
+        </div>
+      )}
+
+      {loading && <p>Loading... please wait.</p>}
+      {!loading && events.length > 0 && (
+        <div>
+          <h2>Recommended Events:</h2>
+          <ul>
+            {events.map((event, index) => (
+              <li key={index}>
+                <h3>{event.title}</h3>
+                <p>{event.description}</p>
+                <p>Start time: {new Date(event.start_time).toLocaleString()}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <button onClick={fetchObservationData} className="plan-observation-button">RECOMMEND AN EVENT!</button>
     </div>
   );
 }

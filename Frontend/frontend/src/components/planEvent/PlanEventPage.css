@@ -4,6 +4,8 @@
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100vh; 
+    overflow-y: auto; 
   }
   
   .plan-event-page h1 {
@@ -39,5 +41,35 @@
     border: 1px solid #ccc;
     border-radius: 7px;
     overflow: hidden;
+  }
+  
+  .planet-options {
+    margin-top: 20px;
+  }
+  
+  .planet-bubbles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .planet-bubble {
+    background-color: #eee;
+    border-radius: 50%;
+    padding: 10px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .planet-bubble.selected {
+    background-color: #2196F3;
+    color: white;
+  }
+  
+  label, input, span {
+    display: inline-block;
+    margin-right: 5px;
   }
   

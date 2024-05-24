@@ -33,9 +33,15 @@ urlpatterns = [
     # path('images/<name>/', views.get_image, name='get_image')
     path('follow/<int:from_user_id>/<int:to_user_id>/', views.follow_user, name='follow_user'),
     path('unfollow/<int:from_user_id>/<int:to_user_id>/', views.unfollow_user, name='unfollow_user'),
-    path('get-best-observation-times/<str:latitude>/<str:longitude>/<str:planet_name>/<int:number_of_days>/', get_best_observation_times),
-    path('lunar-eclipse-prediction/<latitude>/<longitude>/', lunar_eclipse_prediction, name='lunar_eclipse_prediction'),
-    path('solar-eclipse-prediction/<latitude>/<longitude>/', solar_eclipse_prediction, name='solar_eclipse_prediction'),
+
+    path('get-best-observation-times/<str:latitude>/<str:longitude>/<str:planet_name>/<int:number_of_days>/', views.get_best_observation_times),
+    path('lunar-eclipse-prediction/<latitude>/<longitude>/<int:number_of_days>', views.lunar_eclipse_prediction, name='lunar_eclipse_prediction'),
+    path('solar-eclipse-prediction/<latitude>/<longitude>/<int:number_of_days>', views.solar_eclipse_prediction, name='solar_eclipse_prediction'),
+
+    path('get-best-observation-times-and-lunar-eclipse/<str:latitude>/<str:longitude>/<str:planet_names>/<int:number_of_days>/<str:preferred_hour>/', views.get_best_observation_times_and_lunar_eclipse),
+    path('get-best-observation-times-and-solar-eclipse/<str:latitude>/<str:longitude>/<str:planet_names>/<int:number_of_days>/<str:preferred_hour>/', views.get_best_observation_times_and_solar_eclipse),
+    path('get-lunar-solar-eclipse/<latitude>/<longitude>/<int:number_of_days>/', views.get_lunar_solar_eclipse),
+    path('get-best-times-and-lunar-solar-eclipse/<str:latitude>/<str:longitude>/<str:planet_name>/<int:number_of_days>/', views.get_best_times_and_lunar_solar_eclipse),
     path('events/', views.EventList.as_view(), name='list-of-events'),
     path('events/<int:pk>/', views.EventDetail.as_view(), name='event-detail'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
