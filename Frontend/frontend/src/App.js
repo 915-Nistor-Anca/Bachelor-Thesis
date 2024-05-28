@@ -1,5 +1,7 @@
+// src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Layout from './components/Layout';
 import FirstPage from './components/firstPage/FirstPage';
 import Planets from './PlanetsPage';
 import Login from './components/loginPage/LoginPage';
@@ -16,6 +18,7 @@ import FollowersPage from './components/followersPage/FollowersPage';
 import FriendPage from './components/friendPage/FriendPage';
 import FeedPage from './components/feedPage/FeedPage';
 import PlanEventPage from './components/planEvent/PlanEventPage';
+import CalendarPage from './components/planEvent/CalendarPage';
 
 function App() {
   return (
@@ -24,23 +27,23 @@ function App() {
         <Routes>
           <Route path="/home" element={<FirstPage />} />
           <Route path="/" element={<Navigate to="/home" />} />
-          <Route path="/planets" element={<Planets />} />
-          <Route path="/login" element={<Login/>} />
-          <Route path="/register" element={<Register/>} />
-          <Route path="/mainuserpage" element = {< MainPage/>} />
-          <Route path="/observationspage" element = {< ObservationsPage/>} />
-          <Route path="/addobservationspage" element = {< AddObservationPage/>} />
-          <Route path="/mapcomponent" element = {< MapComponent/>} />
-          <Route path="/updateobservationpage" element = {< UpdateObservationPage/>} />
-          <Route path="/starpage" element = {< StarPage/>} />
-          <Route path="/profile" element = {< ProfilePage/>} />
-          <Route path="/following/:username" element = {< FollowingPage/>} />
-          <Route path="/followers/:username" element = {< FollowersPage/>} />
-          <Route path="/user/:username" element={<FriendPage/>} />
-          <Route path ="/feed" element= {<FeedPage/>}/>
-          <Route path ="/planevent" element= {<PlanEventPage/>}/>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/mainuserpage" element={<Layout><MainPage /></Layout>} />
+          <Route path="/observationspage" element={<Layout><ObservationsPage /></Layout>} />
+          <Route path="/addobservationspage" element={<Layout><AddObservationPage /></Layout>} />
+          <Route path="/mapcomponent" element={<Layout><MapComponent /></Layout>} />
+          <Route path="/updateobservationpage" element={<Layout><UpdateObservationPage /></Layout>} />
+          <Route path="/starpage" element={<Layout><StarPage /></Layout>} />
+          <Route path="/profile" element={<Layout><ProfilePage /></Layout>} />
+          <Route path="/following/:username" element={<Layout><FollowingPage /></Layout>} />
+          <Route path="/followers/:username" element={<Layout><FollowersPage /></Layout>} />
+          <Route path="/user/:username" element={<Layout><FriendPage /></Layout>} />
+          <Route path="/feed" element={<Layout><FeedPage /></Layout>} />
+          <Route path="/planevent" element={<Layout><PlanEventPage /></Layout>} />
+          <Route path="/calendar" element={<Layout><CalendarPage /></Layout>} />
         </Routes>
-      </Router> 
+      </Router>
     </React.Fragment>
   );
 }

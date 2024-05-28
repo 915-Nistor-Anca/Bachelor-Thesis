@@ -78,3 +78,21 @@ class PolarisAppTests(TestCase):
         self.assertEqual(star.designation, 'Alpha Canis Majoris')
         self.assertEqual(star.hip, '32349')
         self.assertEqual(star.bayer, 'α CMa')
+
+from django.test import TestCase, Client
+from django.urls import reverse
+class InvitationTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_send_invitation(self):
+        url = reverse('send_invitation')
+        data = {
+            'email': 'test@example.com',
+            'event_title': 'Test Event',
+            'event_description': 'This is a test event.',
+            'event_time': '2024-06-01T12:00:00Z',
+        }
+        response = self.client.post(url, data, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('message', response.json())

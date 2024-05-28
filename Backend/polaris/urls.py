@@ -27,7 +27,7 @@ urlpatterns = [
     path('get-followers/<id>/', views.get_followers, name='get_followers'),
     path('get-equipment-id/<name>/', views.get_equipment_id, name='get_equipment_id'),
     path('userprofiles/', views.UserProfileList.as_view(), name='list-of-user-profiles'),
-    path('userprofiles/<int:user_id>', views.UserProfileDetail.as_view(), name='user-profile-detail'),
+    path('userprofiles/<int:user_id>/', views.UserProfileDetail.as_view(), name='user-profile-detail'),
     # path('images/', views.ImageList.as_view(), name='list-of-images'),
     # path('images/<int:pk>', views.ImageDetail.as_view(), name='image-detail'),
     # path('images/<name>/', views.get_image, name='get_image')
@@ -35,13 +35,17 @@ urlpatterns = [
     path('unfollow/<int:from_user_id>/<int:to_user_id>/', views.unfollow_user, name='unfollow_user'),
 
     path('get-best-observation-times/<str:latitude>/<str:longitude>/<str:planet_name>/<int:number_of_days>/', views.get_best_observation_times),
-    path('lunar-eclipse-prediction/<latitude>/<longitude>/<int:number_of_days>', views.lunar_eclipse_prediction, name='lunar_eclipse_prediction'),
-    path('solar-eclipse-prediction/<latitude>/<longitude>/<int:number_of_days>', views.solar_eclipse_prediction, name='solar_eclipse_prediction'),
+    path('lunar-eclipse-prediction/<latitude>/<longitude>/<int:number_of_days>/', views.lunar_eclipse_prediction, name='lunar_eclipse_prediction'),
+    path('solar-eclipse-prediction/<latitude>/<longitude>/<int:number_of_days>/', views.solar_eclipse_prediction, name='solar_eclipse_prediction'),
 
     path('get-best-observation-times-and-lunar-eclipse/<str:latitude>/<str:longitude>/<str:planet_names>/<int:number_of_days>/<str:preferred_hour>/', views.get_best_observation_times_and_lunar_eclipse),
     path('get-best-observation-times-and-solar-eclipse/<str:latitude>/<str:longitude>/<str:planet_names>/<int:number_of_days>/<str:preferred_hour>/', views.get_best_observation_times_and_solar_eclipse),
-    path('get-lunar-solar-eclipse/<latitude>/<longitude>/<int:number_of_days>/', views.get_lunar_solar_eclipse),
-    path('get-best-times-and-lunar-solar-eclipse/<str:latitude>/<str:longitude>/<str:planet_name>/<int:number_of_days>/', views.get_best_times_and_lunar_solar_eclipse),
+    path('get-lunar-solar-eclipse/<latitude>/<longitude>/<int:number_of_days>/<str:preferred_hour>/', views.get_lunar_solar_eclipse),
+    path('get-best-times-and-lunar-solar-eclipse/<str:latitude>/<str:longitude>/<str:planet_names>/<int:number_of_days>/<str:preferred_hour>/', views.get_best_times_and_lunar_solar_eclipse),
+    path('get-lunar-eclipses-events/<str:latitude>/<str:longitude>/<int:number_of_days>/<str:preferred_hour>/', views.get_lunar_eclipses_events),
+    path('get-solar-eclipses-events/<str:latitude>/<str:longitude>/<int:number_of_days>/<str:preferred_hour>/', views.get_solar_eclipses_events),
+    path('get-planets-observation-times/<str:latitude>/<str:longitude>/<str:planet_names>/<int:number_of_days>/<str:preferred_hour>/', views.get_planets_observation_times),
     path('events/', views.EventList.as_view(), name='list-of-events'),
     path('events/<int:pk>/', views.EventDetail.as_view(), name='event-detail'),
+    path('send-invitation/', views.send_invitation, name='send_invitation'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

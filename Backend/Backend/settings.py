@@ -42,6 +42,11 @@ INSTALLED_APPS = [
 
 ]
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -59,6 +64,11 @@ AUTH_USER_MODEL = 'polaris.User'
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     'django.contrib.auth.backends.BaseBackend',
+]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'x-csrftoken'
 ]
 
 TEMPLATES = [
@@ -134,3 +144,18 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = 'polaris/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'ancanistor16@gmail.com'
+EMAIL_HOST_PASSWORD = 'udnt trzo wtul iaqk'
+PASSWORD = 'udnt trzo wtul iaqk'
+
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SAMESITE = 'Lax'
+
+

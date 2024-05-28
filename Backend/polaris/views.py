@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from rest_framework import generics
 from skyfield.api import load, Topos
 from skyfield.almanac import find_discrete, risings_and_settings, oppositions_conjunctions, moon_phases
@@ -354,15 +354,14 @@ def solar_eclipse_prediction(request, latitude, longitude, number_of_days):
     sun = ephem.Sun()
     observer = ephem.Observer()
     observer.lat, observer.lon = str(latitude), str(longitude)
-    observer.elevation = 0        # assuming the observer is at sea level
-    observer.pressure = 0         # disable refraction
+    observer.elevation = 0
+    observer.pressure = 0
 
     eclipses = []
 
     while curtime <= endtime:
         observer.date = curtime.strftime('%Y/%m/%d %H:%M:%S')
 
-        # Compute the position of the sun and the moon with respect to the observer
         moon.compute(observer)
         sun.compute(observer)
 
@@ -371,17 +370,14 @@ def solar_eclipse_prediction(request, latitude, longitude, number_of_days):
 
         # A solar eclipse happens if Sun-Earth-Moon alignment is <1.5976°
         if sep < 1.59754941:
-            eclipses.append({
-                'date': curtime.strftime('%Y/%m/%d %H:%M:%S'),
-                'separation': sep
-            })
+            eclipses.append(curtime.strftime('%Y/%m/%d %H:%M:%S'))
             # Skip 24 hours when an eclipse is found
             curtime += timedelta(days=1)
         else:
             # Advance five minutes if an eclipse is not found
             curtime += timedelta(minutes=5)
 
-    return JsonResponse(eclipses, safe=False)
+    return JsonResponse({'eclipse_times': eclipses})
 
 
 class EventList(generics.ListCreateAPIView):
@@ -394,23 +390,13 @@ class EventDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventSerializer
 
 
-import json
-
-
-import json
-from datetime import datetime, timedelta
-from django.http import JsonResponse
 from skyfield.api import load, Topos
 from skyfield.almanac import find_discrete, risings_and_settings, oppositions_conjunctions, moon_phases
 import ephem
 
-import json
-from datetime import datetime, timedelta
-from django.http import JsonResponse
-
+from datetime import timedelta
 def get_best_observation_times_and_lunar_eclipse(request, latitude, longitude, planet_names, number_of_days, preferred_hour):
     try:
-        # Parse the planet names from the URL parameter
         planet_names_list = planet_names.split(',')
 
         observation_times = {}
@@ -428,77 +414,44 @@ def get_best_observation_times_and_lunar_eclipse(request, latitude, longitude, p
             elif planet_name == "pluto":
                 planet_name = "PLUTO BARYCENTER"
 
-            # Fetch observation times for each planet
             planet_response = get_best_observation_times(request, latitude, longitude, planet_name, number_of_days)
             planet_data = json.loads(planet_response.content)
             observation_times[planet_name] = planet_data['observation_times']
 
-        # Fetch lunar eclipse times
         lunar_response = lunar_eclipse_prediction(request, latitude, longitude, number_of_days)
         lunar_data = json.loads(lunar_response.content)
         lunar_eclipse_times = lunar_data['eclipse_times']
 
-        # Find overlapping observation times for planets
         combined_times = []
-        planet_pairs = []
         event_details = []
         planet_names_keys = list(observation_times.keys())
+
         for i in range(len(planet_names_keys)):
             for j in range(i + 1, len(planet_names_keys)):
                 for time1 in observation_times[planet_names_keys[i]]:
                     for time2 in observation_times[planet_names_keys[j]]:
                         time1_datetime = datetime.strptime(time1, '%Y-%m-%d %H:%M:%S')
                         time2_datetime = datetime.strptime(time2, '%Y-%m-%d %H:%M:%S')
-                        if abs((time1_datetime - time2_datetime).total_seconds()) < 7200:  # Close enough if within 2 hours
+                        if abs((time1_datetime - time2_datetime).total_seconds()) < 7200:
                             combined_times.append(time1)
-                            planet_pairs.append((planet_names_keys[i], planet_names_keys[j]))
-                            name_of_planet_i = planet_names_keys[i]
-                            name_of_planet_j = planet_names_keys[j]
-                            if planet_names_keys[i] == "MARS BARYCENTER":
-                                name_of_planet_i = "mars"
-                            elif planet_names_keys[i] == "JUPITER BARYCENTER":
-                                name_of_planet_i = "jupiter"
-                            elif planet_names_keys[i] == "SATURN BARYCENTER":
-                                name_of_planet_i = "saturn"
-                            elif planet_names_keys[i] == "URANUS BARYCENTER":
-                                name_of_planet_i = "uranus"
-                            elif planet_names_keys[i] == "NEPTUNE BARYCENTER":
-                                name_of_planet_i = "neptune"
-                            elif planet_names_keys[i] == "PLUTO BARYCENTER":
-                                name_of_planet_i = "pluto"
-
-                            if planet_names_keys[j] == "MARS BARYCENTER":
-                                name_of_planet_j = "mars"
-                            elif planet_names_keys[j] == "JUPITER BARYCENTER":
-                                name_of_planet_j = "jupiter"
-                            elif planet_names_keys[j] == "SATURN BARYCENTER":
-                                name_of_planet_j = "saturn"
-                            elif planet_names_keys[j] == "URANUS BARYCENTER":
-                                name_of_planet_j = "uranus"
-                            elif planet_names_keys[j] == "NEPTUNE BARYCENTER":
-                                name_of_planet_j = "neptune"
-                            elif planet_names_keys[j] == "PLUTO BARYCENTER":
-                                name_of_planet_j = "pluto"
+                            name_of_planet_i = planet_names_keys[i].replace(" BARYCENTER", "").lower()
+                            name_of_planet_j = planet_names_keys[j].replace(" BARYCENTER", "").lower()
                             event_details.append(f"Observing {name_of_planet_i} and {name_of_planet_j}")
             for time1 in observation_times[planet_names_keys[i]]:
                 for eclipse_time in lunar_eclipse_times:
                     target_datetime = datetime.strptime(time1, '%Y-%m-%d %H:%M:%S')
                     eclipse_datetime = datetime.strptime(eclipse_time, '%Y/%m/%d %H:%M:%S')
-                    if abs((target_datetime - eclipse_datetime).total_seconds()) < 7200:  # Close enough if within 2 hours
+                    if abs((target_datetime - eclipse_datetime).total_seconds()) < 7200:
                         combined_times.append(time1)
                         event_details.append("Lunar eclipse")
 
         if combined_times:
-            # Remove duplicate times
             unique_combined_times = list(set(combined_times))
 
-            # Sort the combined times
             unique_combined_times.sort()
 
-            # Convert the preferred hour to a time object
             preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
 
-            # Find the event closest to the preferred hour
             preferred_event = None
             min_time_difference = float('inf')
             for time in unique_combined_times:
@@ -508,40 +461,47 @@ def get_best_observation_times_and_lunar_eclipse(request, latitude, longitude, p
                     min_time_difference = time_difference
                     preferred_event = time
 
-            # Generate events for the combined times
             events = []
-            for time in unique_combined_times[:3]:  # Limit to the first three best events
+            added_descriptions = set()
+            for time in unique_combined_times:
                 title = "Combined Observation Event"
                 start_time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
                 index = combined_times.index(time)
                 description = event_details[index]
                 if time == preferred_event:
                     description += " (Preferred event option)"
-                events.append({'title': title, 'description': description, 'start_time': start_time})
+                if description not in added_descriptions:
+                    events.append({'title': title, 'description': description, 'start_time': start_time})
+                    added_descriptions.add(description)
+                if len(events) >= 3:
+                    break
 
-            return JsonResponse({'events': events, 'observation_times': observation_times, 'lunar_eclipse_times': lunar_eclipse_times, 'combined_times': unique_combined_times})
+            if len(events) < 3:
+                for eclipse_time in lunar_eclipse_times:
+                    eclipse_datetime = datetime.strptime(eclipse_time, '%Y/%m/%d %H:%M:%S')
+                    description = "Lunar eclipse"
+                    if description not in added_descriptions:
+                        events.append({'title': "Observation Event", 'description': description, 'start_time': eclipse_datetime})
+                        added_descriptions.add(description)
+                    if len(events) >= 3:
+                        break
+
+            return JsonResponse({'events': events[:3], 'observation_times': observation_times, 'lunar_eclipse_times': lunar_eclipse_times, 'combined_times': unique_combined_times})
         else:
-            # If no combined times found, check for observation times close to the preferred hour
-            not_so_good_events = []
-            preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
-            for planet in planet_names_keys:
-                for time in observation_times[planet]:
-                    time_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').time()
-                    time_difference = abs((datetime.combine(datetime.today(), time_datetime) - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
-                    if time_difference < 7200:  # Close enough if within 2 hours
-                        description = f"Observing {planet}"
-                        not_so_good_events.append({'title': "Observation Event", 'description': description, 'start_time': datetime.strptime(time, '%Y-%m-%d %H:%M:%S')})
+            random_events = []
+            for i in range(3):
+                for planet in planet_names_keys:
+                    if observation_times[planet]:
+                        random_time = observation_times[planet][i % len(observation_times[planet])]
+                        random_events.append({'title': "Observation Event", 'description': f"Observing {planet.replace(' BARYCENTER', '').lower()}", 'start_time': datetime.strptime(random_time, '%Y-%m-%d %H:%M:%S')})
 
-            return JsonResponse({'events': not_so_good_events, 'observation_times': observation_times, 'lunar_eclipse_times': lunar_eclipse_times, 'combined_times': []})
+            return JsonResponse({'events': random_events[:3], 'observation_times': observation_times, 'lunar_eclipse_times': lunar_eclipse_times, 'combined_times': []})
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
-
 def get_best_observation_times_and_solar_eclipse(request, latitude, longitude, planet_names, number_of_days, preferred_hour):
     try:
-        # Parse the planet names from the URL parameter
         planet_names_list = planet_names.split(',')
 
         observation_times = {}
@@ -559,21 +519,18 @@ def get_best_observation_times_and_solar_eclipse(request, latitude, longitude, p
             elif planet_name == "pluto":
                 planet_name = "PLUTO BARYCENTER"
 
-            # Fetch observation times for each planet
             planet_response = get_best_observation_times(request, latitude, longitude, planet_name, number_of_days)
             planet_data = json.loads(planet_response.content)
             observation_times[planet_name] = planet_data['observation_times']
 
-        # Fetch solar eclipse times
         solar_response = solar_eclipse_prediction(request, latitude, longitude, number_of_days)
         solar_data = json.loads(solar_response.content)
-        solar_eclipse_times = [eclipse['date'] for eclipse in solar_data]
+        solar_eclipse_times = solar_data['eclipse_times']
 
-        # Find overlapping observation times for planets
         combined_times = []
-        planet_pairs = []
         event_details = []
         planet_names_keys = list(observation_times.keys())
+
         for i in range(len(planet_names_keys)):
             for j in range(i + 1, len(planet_names_keys)):
                 for time1 in observation_times[planet_names_keys[i]]:
@@ -582,34 +539,8 @@ def get_best_observation_times_and_solar_eclipse(request, latitude, longitude, p
                         time2_datetime = datetime.strptime(time2, '%Y-%m-%d %H:%M:%S')
                         if abs((time1_datetime - time2_datetime).total_seconds()) < 7200:  # Close enough if within 2 hours
                             combined_times.append(time1)
-                            planet_pairs.append((planet_names_keys[i], planet_names_keys[j]))
-                            name_of_planet_i = planet_names_keys[i]
-                            name_of_planet_j = planet_names_keys[j]
-                            if planet_names_keys[i] == "MARS BARYCENTER":
-                                name_of_planet_i = "mars"
-                            elif planet_names_keys[i] == "JUPITER BARYCENTER":
-                                name_of_planet_i = "jupiter"
-                            elif planet_names_keys[i] == "SATURN BARYCENTER":
-                                name_of_planet_i = "saturn"
-                            elif planet_names_keys[i] == "URANUS BARYCENTER":
-                                name_of_planet_i = "uranus"
-                            elif planet_names_keys[i] == "NEPTUNE BARYCENTER":
-                                name_of_planet_i = "neptune"
-                            elif planet_names_keys[i] == "PLUTO BARYCENTER":
-                                name_of_planet_i = "pluto"
-
-                            if planet_names_keys[j] == "MARS BARYCENTER":
-                                name_of_planet_j = "mars"
-                            elif planet_names_keys[j] == "JUPITER BARYCENTER":
-                                name_of_planet_j = "jupiter"
-                            elif planet_names_keys[j] == "SATURN BARYCENTER":
-                                name_of_planet_j = "saturn"
-                            elif planet_names_keys[j] == "URANUS BARYCENTER":
-                                name_of_planet_j = "uranus"
-                            elif planet_names_keys[j] == "NEPTUNE BARYCENTER":
-                                name_of_planet_j = "neptune"
-                            elif planet_names_keys[j] == "PLUTO BARYCENTER":
-                                name_of_planet_j = "pluto"
+                            name_of_planet_i = planet_names_keys[i].replace(" BARYCENTER", "").lower()
+                            name_of_planet_j = planet_names_keys[j].replace(" BARYCENTER", "").lower()
                             event_details.append(f"Observing {name_of_planet_i} and {name_of_planet_j}")
             for time1 in observation_times[planet_names_keys[i]]:
                 for eclipse_time in solar_eclipse_times:
@@ -620,16 +551,12 @@ def get_best_observation_times_and_solar_eclipse(request, latitude, longitude, p
                         event_details.append("Solar eclipse")
 
         if combined_times:
-            # Remove duplicate times
             unique_combined_times = list(set(combined_times))
 
-            # Sort the combined times
             unique_combined_times.sort()
 
-            # Convert the preferred hour to a time object
             preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
 
-            # Find the event closest to the preferred hour
             preferred_event = None
             min_time_difference = float('inf')
             for time in unique_combined_times:
@@ -639,38 +566,360 @@ def get_best_observation_times_and_solar_eclipse(request, latitude, longitude, p
                     min_time_difference = time_difference
                     preferred_event = time
 
-            # Generate events for the combined times
             events = []
-            for time in unique_combined_times[:3]:  # Limit to the first three best events
+            added_descriptions = set()
+            for time in unique_combined_times:
                 title = "Combined Observation Event"
                 start_time = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
                 index = combined_times.index(time)
                 description = event_details[index]
                 if time == preferred_event:
                     description += " (Preferred event option)"
-                events.append({'title': title, 'description': description, 'start_time': start_time})
+                if description not in added_descriptions:
+                    events.append({'title': title, 'description': description, 'start_time': start_time})
+                    added_descriptions.add(description)
+                if len(events) >= 3:
+                    break
 
-            return JsonResponse({'events': events, 'observation_times': observation_times, 'solar_eclipse_times': solar_eclipse_times, 'combined_times': unique_combined_times})
+            if len(events) < 3:
+                for eclipse_time in solar_eclipse_times:
+                    eclipse_datetime = datetime.strptime(eclipse_time, '%Y/%m/%d %H:%M:%S')
+                    description = "Solar eclipse"
+                    if description not in added_descriptions:
+                        events.append({'title': "Observation Event", 'description': description, 'start_time': eclipse_datetime})
+                        added_descriptions.add(description)
+                    if len(events) >= 3:
+                        break
+
+            return JsonResponse({'events': events[:3], 'observation_times': observation_times, 'solar_eclipse_times': solar_eclipse_times, 'combined_times': unique_combined_times})
         else:
-            # If no combined times found, check for observation times close to the preferred hour
-            not_so_good_events = []
-            preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
-            for planet in planet_names_keys:
-                for time in observation_times[planet]:
-                    time_datetime = datetime.strptime(time, '%Y-%m-%d %H:%M:%S').time()
-                    time_difference = abs((datetime.combine(datetime.today(), time_datetime) - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
-                    if time_difference < 7200:  # Close enough if within 2 hours
-                        description = f"Observing {planet}"
-                        not_so_good_events.append({'title': "Observation Event", 'description': description, 'start_time': datetime.strptime(time, '%Y-%m-%d %H:%M:%S')})
-
-            return JsonResponse({'events': not_so_good_events, 'observation_times': observation_times, 'solar_eclipse_times': solar_eclipse_times, 'combined_times': []})
+            random_events = []
+            for i in range(3):
+                for planet in planet_names_keys:
+                    if observation_times[planet]:
+                        random_time = observation_times[planet][i % len(observation_times[planet])]
+                        random_events.append({'title': "Observation Event", 'description': f"Observing {planet.replace(' BARYCENTER', '').lower()}", 'start_time': datetime.strptime(random_time, '%Y-%m-%d %H:%M:%S')})
+            return JsonResponse({'events': random_events[:3], 'observation_times': observation_times, 'solar_eclipse_times': solar_eclipse_times, 'combined_times': []})
 
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
 
-def get_lunar_solar_eclipse(request, latitude, longitude):
-    pass
+def get_lunar_solar_eclipse(request, latitude, longitude, number_of_days, preferred_hour):
+    try:
+        lunar_response = lunar_eclipse_prediction(request, latitude, longitude, number_of_days)
+        lunar_data = json.loads(lunar_response.content)
+        lunar_eclipse_times = lunar_data['eclipse_times']
 
-def get_best_times_and_lunar_solar_eclipse(request, latitude, longitude, planet_name, number_of_days):
-    pass
+        solar_response = solar_eclipse_prediction(request, latitude, longitude, number_of_days)
+        solar_data = json.loads(solar_response.content)
+        solar_eclipse_times = [item['date'] for item in solar_data]
+
+        preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
+
+        def find_closest_eclipses(eclipse_times, num_eclipses):
+            closest_eclipses = []
+            for eclipse_time in eclipse_times:
+                eclipse_datetime = datetime.strptime(eclipse_time, '%Y/%m/%d %H:%M:%S')
+                eclipse_time_only = eclipse_datetime.time()
+                time_difference = abs((datetime.combine(datetime.today(), eclipse_time_only) - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
+                closest_eclipses.append((eclipse_datetime, time_difference))
+
+            closest_eclipses.sort(key=lambda x: x[1])
+            return [eclipse[0] for eclipse in closest_eclipses[:num_eclipses]]
+
+        closest_lunar_eclipse = find_closest_eclipses(lunar_eclipse_times, 1)
+
+        closest_solar_eclipses = find_closest_eclipses(solar_eclipse_times, 2)
+
+        events = []
+        if closest_lunar_eclipse:
+            events.append({
+                'title': 'Lunar Eclipse Event',
+                'description': 'Lunar eclipse',
+                'start_time': closest_lunar_eclipse[0]
+            })
+        for solar_eclipse in closest_solar_eclipses:
+            events.append({
+                'title': 'Solar Eclipse Event',
+                'description': 'Solar eclipse',
+                'start_time': solar_eclipse
+            })
+
+        return JsonResponse({'events': events})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def get_lunar_eclipses_events(request, latitude, longitude, number_of_days, preferred_hour):
+    try:
+        lunar_response = lunar_eclipse_prediction(request, latitude, longitude, number_of_days)
+        lunar_data = json.loads(lunar_response.content)
+        lunar_eclipse_times = lunar_data['eclipse_times']
+
+        preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S')
+
+        upcoming_lunar_eclipses = []
+        for eclipse_time_str in lunar_eclipse_times:
+            eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
+            time_difference = abs((eclipse_datetime - preferred_hour_time).total_seconds())
+            if time_difference < 7200:
+                upcoming_lunar_eclipses.append({'title': "Lunar Eclipse", 'start_time': eclipse_datetime})
+
+        upcoming_lunar_eclipses.sort(key=lambda x: x['start_time'])
+
+        events = upcoming_lunar_eclipses[:3]
+
+        if not events and lunar_eclipse_times:
+            upcoming_events = [{'title': "Lunar Eclipse", 'start_time': datetime.strptime(time, '%Y/%m/%d %H:%M:%S')} for time in lunar_eclipse_times[:3]]
+            return JsonResponse({'events': upcoming_events})
+        else:
+            return JsonResponse({'events': events})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+def get_solar_eclipses_events(request, latitude, longitude, number_of_days, preferred_hour):
+    try:
+        solar_response = solar_eclipse_prediction(request, latitude, longitude, number_of_days)
+        solar_data = json.loads(solar_response.content)
+        solar_eclipse_times = solar_data['eclipse_times']
+
+        preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S')
+
+        upcoming_solar_eclipses = []
+        for eclipse_time_str in solar_eclipse_times:
+            eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
+            time_difference = abs((eclipse_datetime - preferred_hour_time).total_seconds())
+            if time_difference < 7200:
+                upcoming_solar_eclipses.append({'title': "Solar Eclipse", 'start_time': eclipse_datetime})
+
+        upcoming_solar_eclipses.sort(key=lambda x: x['start_time'])
+
+        events = upcoming_solar_eclipses[:3]
+
+        if not events and solar_eclipse_times:
+            upcoming_events = [{'title': "Solar Eclipse", 'start_time': datetime.strptime(time, '%Y/%m/%d %H:%M:%S')} for time in solar_eclipse_times[:3]]
+            return JsonResponse({'events': upcoming_events})
+        else:
+            return JsonResponse({'events': events})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+def get_planets_observation_times(request, latitude, longitude, planet_names, number_of_days, preferred_hour):
+    try:
+        planet_names_list = planet_names.split(',')
+
+        observation_times = {}
+
+        for planet_name in planet_names_list:
+            if planet_name == "mars":
+                planet_name = "MARS BARYCENTER"
+            elif planet_name == "jupiter":
+                planet_name = "JUPITER BARYCENTER"
+            elif planet_name == "saturn":
+                planet_name = "SATURN BARYCENTER"
+            elif planet_name == "uranus":
+                planet_name = "URANUS BARYCENTER"
+            elif planet_name == "neptune":
+                planet_name = "NEPTUNE BARYCENTER"
+            elif planet_name == "pluto":
+                planet_name = "PLUTO BARYCENTER"
+
+            planet_response = get_best_observation_times(request, latitude, longitude, planet_name, number_of_days)
+            planet_data = json.loads(planet_response.content)
+            observation_times[planet_name] = planet_data['observation_times']
+
+        best_events = []
+
+        for planet_name, times in observation_times.items():
+            preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
+
+            planet_events = []
+
+            for time_str in times:
+                time_datetime = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S').time()
+
+
+                time_difference = abs(datetime.combine(datetime.today(), time_datetime) - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds()
+
+
+                if time_difference < 7200:
+                    planet_events.append({'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Observation", 'start_time': time_str})
+
+            while len(planet_events) < 3:
+                random_time = random.choice(times)
+                planet_events.append({'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Observation", 'start_time': random_time})
+
+            best_events.extend(planet_events[:3])
+
+        unique_events = []
+        seen_times = set()
+        for event in best_events:
+            start_time = event['start_time']
+            if start_time not in seen_times:
+                unique_events.append(event)
+                seen_times.add(start_time)
+
+        return JsonResponse({'events': unique_events})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+from datetime import datetime
+import random
+
+def get_best_times_and_lunar_solar_eclipse(request, latitude, longitude, planet_names, number_of_days, preferred_hour):
+    try:
+        planet_names_list = planet_names.split(',')
+
+        observation_times = {}
+
+        for planet_name in planet_names_list:
+            if planet_name == "mars":
+                planet_name = "MARS BARYCENTER"
+            elif planet_name == "jupiter":
+                planet_name = "JUPITER BARYCENTER"
+            elif planet_name == "saturn":
+                planet_name = "SATURN BARYCENTER"
+            elif planet_name == "uranus":
+                planet_name = "URANUS BARYCENTER"
+            elif planet_name == "neptune":
+                planet_name = "NEPTUNE BARYCENTER"
+            elif planet_name == "pluto":
+                planet_name = "PLUTO BARYCENTER"
+
+            planet_response = get_best_observation_times(request, latitude, longitude, planet_name, number_of_days)
+            planet_data = json.loads(planet_response.content)
+            observation_times[planet_name] = planet_data['observation_times']
+
+        lunar_response = lunar_eclipse_prediction(request, latitude, longitude, number_of_days)
+        lunar_data = json.loads(lunar_response.content)
+        lunar_eclipse_times = lunar_data['eclipse_times']
+
+        solar_response = solar_eclipse_prediction(request, latitude, longitude, number_of_days)
+        solar_data = json.loads(solar_response.content)
+        solar_eclipse_times = solar_data['eclipse_times']
+
+        preferred_hour_time = datetime.strptime(preferred_hour, '%H:%M:%S').time()
+
+        events = []
+
+        for planet_name, times in observation_times.items():
+            best_time = None
+            for time_str in times:
+                time_datetime = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S').time()
+                time_difference = abs(datetime.combine(datetime.today(), time_datetime) - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds()
+                if time_difference < 7200:  # Close enough if within 2 hours
+                    best_time = {'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Best Time", 'start_time': time_str}
+                    break
+            if best_time:
+                events.append(best_time)
+
+        lunar_event = None
+        min_lunar_time_difference = float('inf')
+        for eclipse_time_str in lunar_eclipse_times:
+            eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
+            time_difference = abs((eclipse_datetime - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
+            if time_difference < min_lunar_time_difference:  # Choose the closest one
+                lunar_event = {'title': "Lunar Eclipse", 'start_time': eclipse_time_str}
+                min_lunar_time_difference = time_difference
+
+        if lunar_event:
+            events.append(lunar_event)
+
+        solar_event = None
+        min_solar_time_difference = float('inf')
+        for eclipse_time_str in solar_eclipse_times:
+            eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
+            time_difference = abs((eclipse_datetime - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
+            if time_difference < min_solar_time_difference:  # Choose the closest one
+                solar_event = {'title': "Solar Eclipse", 'start_time': eclipse_time_str}
+                min_solar_time_difference = time_difference
+
+        if solar_event:
+            events.append(solar_event)
+
+        # Fill in the remaining events if necessary
+        while len(events) < 3:
+            random_planet = random.choice(list(observation_times.keys()))
+            random_time = random.choice(observation_times[random_planet])
+            events.append({'title': f"{random_planet.replace(' BARYCENTER', '').capitalize()} Best Time", 'start_time': random_time})
+
+        return JsonResponse({'events': events})
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+from django.core.mail import send_mail
+from django.conf import settings
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.conf import settings
+
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+from django.conf import settings
+
+
+def send_email(to_email, subject, body):
+    sender_email = settings.EMAIL_HOST_USER
+    password = settings.EMAIL_HOST_PASSWORD
+
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, password)
+
+        server.sendmail(sender_email, to_email, msg.as_string())
+        print("Email sent successfully!")
+    except Exception as e:
+        print(f"Error: {e}")
+        raise e
+    finally:
+        server.quit()
+
+
+@csrf_exempt
+def send_invitation_email(to_email, event_details):
+    subject = 'You are invited to an event!'
+    message = f"Hello,\n\nYou are invited to the following event:\n\n" \
+              f"Title: {event_details.get('title')}\n" \
+              f"Description: {event_details.get('description')}\n" \
+              f"Time: {event_details.get('start_time')}\n\n" \
+              "Best regards,\nYour Event Organizer"
+
+    send_email(to_email, subject, message)
+
+
+@csrf_exempt
+def send_invitation(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            to_email = data.get('email')
+            event_details = data.get('event_details')
+            print(to_email, event_details)
+            send_invitation_email(to_email, event_details)
+            return JsonResponse({'status': 'success', 'message': 'Invitation sent successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
