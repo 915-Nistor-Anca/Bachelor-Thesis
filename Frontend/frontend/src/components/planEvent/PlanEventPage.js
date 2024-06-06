@@ -4,6 +4,8 @@ import './PlanEventPage.css';
 import MapComponent from '../MapComponent';
 import CalendarPage from './CalendarPage';
 import Modal from './Modal.js';
+import arrowIcon from './arrow.png';
+import manProfileIcon from './man-figure.png';
 
 function PlanEventPage() {
   const navigate = useNavigate();
@@ -28,7 +30,7 @@ function PlanEventPage() {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
-  // const [createdEventId, setCreatedEventId] = useState(null);
+  const [createdEventId, setCreatedEventId] = useState(null);
   const [followingUsers, setFollowingUsers] = useState([]);
   const [loggedInUserId, setLoggedInUserId] = useState(null);
   const [usernames, setUsernames] = useState({});
@@ -134,6 +136,8 @@ function PlanEventPage() {
       if (response.ok) {
         const createdEvent = await response.json();
         setSuccessMessage('Event added successfully!');
+        console.log(createdEvent);
+        setCreatedEventId(createdEvent.id);
         setShowConfirmation(false);
       } else {
         console.error('Error creating event:', response.statusText);
@@ -249,6 +253,14 @@ const sendInvitationEmail = async (email, event) => {
   }
 };
 
+const redirectToEvent = () => {
+  if (createdEventId) {
+    navigate(`/events/${createdEventId}`);
+  } else {
+    console.error('No event ID found');
+  }
+};
+
 
   return (
     <div>
@@ -355,6 +367,15 @@ const sendInvitationEmail = async (email, event) => {
                 onChange={(e) => setSelectedTargets({ ...selectedTargets, lunarEclipse: e.target.checked })}
               />
               Next lunar eclipse
+            </label>
+            <br/>
+            <label className='checkbox'>
+              <input
+                type="checkbox"
+                checked={selectedTargets.lunarEclipse}
+                onChange={(e) => setSelectedTargets({ ...selectedTargets, lunarEclipse: e.target.checked })}
+              />
+              Simple star observation
             </label>
             </div>
           <button onClick={handleShowMonths} className="choose-targets-button">Choose targets</button>
@@ -521,17 +542,32 @@ const sendInvitationEmail = async (email, event) => {
 
       {successMessage && (
         <div className="success-message">
-          <p>{successMessage}</p>
-          <p>The next step is to invite people to your event. </p>
-        {Object.entries(usernames).map(([id, userData]) => (
+          <p className='p-from-success'>{successMessage}</p>
+          <p className='message-invitation'>Share the excitement! Invite your friends to join the fun and make unforgettable memories together!</p>
+        {/* {Object.entries(usernames).map(([id, userData]) => (
         <div key={id}>
-          <p2>Username: {userData.username}</p2>
-          <p2>Email: {userData.email}</p2>
+          <p2>{userData.username}, </p2>
+          <p2>{userData.email}</p2>
           <button onClick={() => sendInvitationEmail(userData.email, selectedEvent)}>Invite</button>
         </div>
-      ))}
+      ))} */}
+      <div className='people-to-invite'>
+      {Object.entries(usernames).slice(0,4).map(([id, userData]) => (
+        <div key={id} className="invite-card">
+          <div className="invite-card-content">
+            <img src={manProfileIcon} alt="Man figure" />
+            <p2>{userData.username}</p2>
+          </div>
+          <p2>{userData.email}</p2>
+          <button onClick={() => sendInvitationEmail(userData.email, selectedEvent)}>Invite</button>
+        </div>
+      ))} 
+      </div>
+        <a onClick={() => redirectToEvent()}>-go to the event page-</a>
+        
         </div>
       )}
+      <img src={arrowIcon} alt="Arrow icon" className="arrow-icon" onClick={() => redirectToEvent()}/>
     </div>
   );
 }

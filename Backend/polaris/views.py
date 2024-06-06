@@ -8,7 +8,7 @@ from skyfield.almanac import find_discrete, risings_and_settings, oppositions_co
 from datetime import timedelta
 from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event
 from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
-    StarSerializer, UserProfileSerializer, EventSerializer
+    StarSerializer, UserProfileSerializer, EventSerializer, ImageSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -17,19 +17,19 @@ import json
 
 from django.conf import settings
 import os
-# from polaris.models import Image
-# def get_image(request, name):
-#     print("GET IMAGE")
-#     image_path = os.path.join(settings.MEDIA_ROOT, name)
-#     image_path = image_path.replace("media", "media/images")
-#     image_path = image_path.replace('/', '\\')
-#     print("IMAGE PATH:", image_path)
-#     if os.path.exists(image_path):
-#         print("the path exists: ", image_path)
-#         with open(image_path, 'rb') as f:
-#             return HttpResponse(f.read(), content_type='image/jpeg')
-#     else:
-#         return HttpResponse(status=404)
+from polaris.models import Image
+def get_image(request, name):
+    print("GET IMAGE")
+    image_path = os.path.join(settings.MEDIA_ROOT, name)
+    image_path = image_path.replace("media", "media/images")
+    image_path = image_path.replace('/', '\\')
+    print("IMAGE PATH:", image_path)
+    if os.path.exists(image_path):
+        print("the path exists: ", image_path)
+        with open(image_path, 'rb') as f:
+            return HttpResponse(f.read(), content_type='image/jpeg')
+    else:
+        return HttpResponse(status=404)
 
 def index(request):
     return HttpResponse("Polaris App.")
@@ -75,10 +75,10 @@ class ObservationDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ObservationSerializer
 
 
-# class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Image.objects.all()
-#     serializer_class = ImageSerializer
-#
+class ImageDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
+
 
 
 class EquipmentDetail(generics.RetrieveUpdateDestroyAPIView):
@@ -98,6 +98,14 @@ class ObservationList(generics.ListCreateAPIView):
     def get_queryset(self):
         user_id = self.kwargs['user_id']
         return Observation.objects.filter(user_id=user_id)
+
+class EventList(generics.ListCreateAPIView):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
+
+    def get_queryset(self):
+        organizer = self.kwargs['organizer']
+        return Event.objects.filter(organizer=organizer)
 
 
 @csrf_exempt
@@ -194,9 +202,9 @@ def get_followers(request, id):
 
 
 
-# class ImageList(generics.ListCreateAPIView):
-#     queryset = Image.objects.all()
-#     serializer_class = ImageSerializer
+class ImageList(generics.ListCreateAPIView):
+    queryset = Image.objects.all()
+    serializer_class = ImageSerializer
 
 
 def follow_user(request, from_user_id, to_user_id):
@@ -664,14 +672,14 @@ def get_lunar_eclipses_events(request, latitude, longitude, number_of_days, pref
             eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
             time_difference = abs((eclipse_datetime - preferred_hour_time).total_seconds())
             if time_difference < 7200:
-                upcoming_lunar_eclipses.append({'title': "Lunar Eclipse", 'start_time': eclipse_datetime})
+                upcoming_lunar_eclipses.append({'title': "Lunar Eclipse", 'start_time': eclipse_datetime, 'description': 'Observing a lunar eclipse'})
 
         upcoming_lunar_eclipses.sort(key=lambda x: x['start_time'])
 
         events = upcoming_lunar_eclipses[:3]
 
         if not events and lunar_eclipse_times:
-            upcoming_events = [{'title': "Lunar Eclipse", 'start_time': datetime.strptime(time, '%Y/%m/%d %H:%M:%S')} for time in lunar_eclipse_times[:3]]
+            upcoming_events = [{'title': "Lunar Eclipse", 'start_time': datetime.strptime(time, '%Y/%m/%d %H:%M:%S'), 'description': 'Observing a lunar eclipse'} for time in lunar_eclipse_times[:3]]
             return JsonResponse({'events': upcoming_events})
         else:
             return JsonResponse({'events': events})
@@ -693,14 +701,14 @@ def get_solar_eclipses_events(request, latitude, longitude, number_of_days, pref
             eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
             time_difference = abs((eclipse_datetime - preferred_hour_time).total_seconds())
             if time_difference < 7200:
-                upcoming_solar_eclipses.append({'title': "Solar Eclipse", 'start_time': eclipse_datetime})
+                upcoming_solar_eclipses.append({'title': "Solar Eclipse", 'start_time': eclipse_datetime, 'description': 'Observing a solar eclipse'})
 
         upcoming_solar_eclipses.sort(key=lambda x: x['start_time'])
 
         events = upcoming_solar_eclipses[:3]
 
         if not events and solar_eclipse_times:
-            upcoming_events = [{'title': "Solar Eclipse", 'start_time': datetime.strptime(time, '%Y/%m/%d %H:%M:%S')} for time in solar_eclipse_times[:3]]
+            upcoming_events = [{'title': "Solar Eclipse", 'start_time': datetime.strptime(time, '%Y/%m/%d %H:%M:%S'), 'description': 'Observing a solar eclipse'} for time in solar_eclipse_times[:3]]
             return JsonResponse({'events': upcoming_events})
         else:
             return JsonResponse({'events': events})
@@ -747,11 +755,11 @@ def get_planets_observation_times(request, latitude, longitude, planet_names, nu
 
 
                 if time_difference < 7200:
-                    planet_events.append({'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Observation", 'start_time': time_str})
+                    planet_events.append({'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Observation", 'start_time': time_str, 'description': 'Observing a planet'})
 
             while len(planet_events) < 3:
                 random_time = random.choice(times)
-                planet_events.append({'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Observation", 'start_time': random_time})
+                planet_events.append({'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Observation", 'start_time': random_time, 'description': 'Observing a planet'})
 
             best_events.extend(planet_events[:3])
 
@@ -813,7 +821,7 @@ def get_best_times_and_lunar_solar_eclipse(request, latitude, longitude, planet_
                 time_datetime = datetime.strptime(time_str, '%Y-%m-%d %H:%M:%S').time()
                 time_difference = abs(datetime.combine(datetime.today(), time_datetime) - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds()
                 if time_difference < 7200:  # Close enough if within 2 hours
-                    best_time = {'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Best Time", 'start_time': time_str}
+                    best_time = {'title': f"{planet_name.replace(' BARYCENTER', '').capitalize()} Best Time", 'start_time': time_str, 'description': 'Observing a planet'}
                     break
             if best_time:
                 events.append(best_time)
@@ -824,7 +832,7 @@ def get_best_times_and_lunar_solar_eclipse(request, latitude, longitude, planet_
             eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
             time_difference = abs((eclipse_datetime - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
             if time_difference < min_lunar_time_difference:  # Choose the closest one
-                lunar_event = {'title': "Lunar Eclipse", 'start_time': eclipse_time_str}
+                lunar_event = {'title': "Lunar Eclipse", 'start_time': eclipse_time_str, 'description': 'Observing a lunar eclipse'}
                 min_lunar_time_difference = time_difference
 
         if lunar_event:
@@ -836,17 +844,16 @@ def get_best_times_and_lunar_solar_eclipse(request, latitude, longitude, planet_
             eclipse_datetime = datetime.strptime(eclipse_time_str, '%Y/%m/%d %H:%M:%S')
             time_difference = abs((eclipse_datetime - datetime.combine(datetime.today(), preferred_hour_time)).total_seconds())
             if time_difference < min_solar_time_difference:  # Choose the closest one
-                solar_event = {'title': "Solar Eclipse", 'start_time': eclipse_time_str}
+                solar_event = {'title': "Solar Eclipse", 'start_time': eclipse_time_str, 'description': 'Observing a solar eclipse'}
                 min_solar_time_difference = time_difference
 
         if solar_event:
             events.append(solar_event)
 
-        # Fill in the remaining events if necessary
         while len(events) < 3:
             random_planet = random.choice(list(observation_times.keys()))
             random_time = random.choice(observation_times[random_planet])
-            events.append({'title': f"{random_planet.replace(' BARYCENTER', '').capitalize()} Best Time", 'start_time': random_time})
+            events.append({'title': f"{random_planet.replace(' BARYCENTER', '').capitalize()} Best Time", 'start_time': random_time, 'description': 'Observing a planet'})
 
         return JsonResponse({'events': events})
 
@@ -923,3 +930,32 @@ def send_invitation(request):
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+
+def get_equipment_list(request, observation_type):
+    equipment_list = []
+
+    if observation_type == "planet":
+        equipment_list = Equipment.objects.filter(name__in=[
+            "Telescope", "Eyepieces", "Barlow lens", "Mount", "Finder scope",
+            "Filters", "Computerized telescope", "GoTo mount", "Observing chair", "Red flashlight"
+        ])
+    elif observation_type == "solar_eclipse":
+        equipment_list = Equipment.objects.filter(name__in=[
+            "Telescope", "Solar filter", "Camera", "Tripod", "Filters",
+            "Observing chair", "Red flashlight"
+        ])
+    elif observation_type == "lunar_eclipse":
+        equipment_list = Equipment.objects.filter(name__in=[
+            "Telescope", "Binoculars", "Camera", "Tripod", "Mount",
+            "Filters", "Observing chair", "Red flashlight"
+        ])
+    elif observation_type == "star_observation":
+        equipment_list = Equipment.objects.filter(name__in=[
+            "Binoculars", "Telescope", "Tripod", "Mount", "Finder scope",
+            "Planisphere", "Star chart", "Observing logbook", "Meteorological station",
+            "Red flashlight", "Observing chair"
+        ])
+    equipment_data = list(equipment_list.values())
+
+    return JsonResponse({'equipment': equipment_data})

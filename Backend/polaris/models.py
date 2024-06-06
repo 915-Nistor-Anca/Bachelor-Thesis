@@ -3,14 +3,6 @@ from django.db import models
 
 from Backend.backend.models import User
 
-
-# class Image(models.Model):
-#     title = models.CharField(max_length=100)
-#     image = models.ImageField(upload_to='images/')
-#
-#     def __str__(self):
-#         return self.title
-
 class User(AbstractUser):
     pass
 
@@ -44,6 +36,18 @@ class SkyCondition(models.Model):
 
     def __str__(self):
         return self.name
+class Event(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
+    organizer = models.ForeignKey(User, related_name='organized_events', on_delete=models.CASCADE)
+    participants = models.ManyToManyField(User, related_name='events_participating', blank=True)
+    location_latitude = models.FloatField()
+    location_longitude = models.FloatField()
+    start_time = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
 
 class Observation(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -54,6 +58,7 @@ class Observation(models.Model):
     equipment = models.ManyToManyField(Equipment)
     personal_observations = models.CharField(max_length=300)
     privacy = models.IntegerField(default=1)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
 
 class Star(models.Model):
     proper_name = models.CharField(max_length=255)
@@ -71,15 +76,12 @@ class Star(models.Model):
         return self.proper_name
 
 
-class Event(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField(blank=True, null=True)
-    organizer = models.ForeignKey(User, related_name='organized_events', on_delete=models.CASCADE)
-    participants = models.ManyToManyField(User, related_name='events_participating', blank=True)
-    location_latitude = models.FloatField()
-    location_longitude = models.FloatField()
-    start_time = models.DateTimeField()
-    created_at = models.DateTimeField(auto_now_add=True)
+class Image(models.Model):
+    title = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='images/')
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return self.title
+

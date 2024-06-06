@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
+import "./MainPage.css";
 
 function MainPage() {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ function MainPage() {
   }, []); 
 
   return (
-    <div>
+    <div className='main-page'>
       <h1>Main Page</h1>
       <div>
         <div><Link to="/observationspage">Observations</Link></div>

@@ -548,3 +548,103 @@
     border: 2px solid white;
 
  }
+
+ .success-message a{
+  font-size: 40px;
+  margin-left: 39%;
+  position: fixed;
+  margin-top: 220px;
+ }
+
+ .success-message .message-invitation{
+  width: 50%;
+  margin-left: 350px;
+ }
+
+ .arrow-icon{
+  position: fixed;
+  margin-left: 510px;
+  margin-top: 390px;
+ }
+/* 
+ .card-container {
+  display: flex;
+  justify-content: center;
+} */
+
+ .success-message .p-from-success{
+  color: #c68dd9;
+  font-style: italic;
+  font-size: 40px;
+  /* border: 2px solid white; */
+ }
+
+ .invite-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  width: 60%;
+  box-sizing: border-box;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.invite-card-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.invite-card img {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.invite-card p2 {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invite-card .email {
+  margin-left: 5px;
+}
+
+.invite-card button {
+  align-self: stretch;
+  padding: 5px 10px;
+  background-color: #375dad;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 30px;
+}
+
+.invite-card button:hover {
+  background-color: #2650ab;
+}
+
+.people-to-invite {
+  display: grid;
+  grid-template-columns: 400px 400px 400px 400px;
+  /* gap: 10px; */
+}
+
+.invite-card-content p2{
+  font-size: 25px;
+}
+
+.invite-card-content p2:hover{
+  color: #2650ab;
+  cursor: pointer;
+}

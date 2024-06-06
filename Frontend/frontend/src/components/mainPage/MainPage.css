@@ -1,0 +1,7 @@
+.main-page{
+    background-image: url("pxfuel.jpg");
+    padding: 20px;
+    background-size: cover;
+    position: relative;
+    height: 100vh;
+}

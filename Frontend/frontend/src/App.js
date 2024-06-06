@@ -19,6 +19,8 @@ import FriendPage from './components/friendPage/FriendPage';
 import FeedPage from './components/feedPage/FeedPage';
 import PlanEventPage from './components/planEvent/PlanEventPage';
 import CalendarPage from './components/planEvent/CalendarPage';
+import EventsPage from './eventsPage/EventsPage';
+import EventDetailsPage from './eventsPage/EventDetailsPage';
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
           <Route path="/feed" element={<Layout><FeedPage /></Layout>} />
           <Route path="/planevent" element={<Layout><PlanEventPage /></Layout>} />
           <Route path="/calendar" element={<Layout><CalendarPage /></Layout>} />
+          <Route path="/events" element={<Layout><EventsPage/></Layout>}/>
+          <Route path="/events/:eventId" element={<Layout><EventDetailsPage /></Layout>} />
         </Routes>
       </Router>
     </React.Fragment>

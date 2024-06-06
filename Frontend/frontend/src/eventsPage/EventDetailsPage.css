@@ -1,0 +1,19 @@
+.event-details-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  
+  .event-details-content {
+    width: calc(50% - 20px); 
+  }
+  
+  .countdown-container {
+    width: calc(50% - 20px); 
+  }
+  
+  .countdown {
+    font-size: 24px; 
+    font-weight: bold;
+  }
+  
