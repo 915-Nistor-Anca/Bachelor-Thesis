@@ -541,6 +541,7 @@ const redirectToEvent = () => {
 )}
 
       {successMessage && (
+        <div>
         <div className="success-message">
           <p className='p-from-success'>{successMessage}</p>
           <p className='message-invitation'>Share the excitement! Invite your friends to join the fun and make unforgettable memories together!</p>
@@ -566,8 +567,10 @@ const redirectToEvent = () => {
         <a onClick={() => redirectToEvent()}>-go to the event page-</a>
         
         </div>
+        <img src={arrowIcon} alt="Arrow icon" className="arrow-icon" onClick={() => redirectToEvent()}/>
+        </div>
       )}
-      <img src={arrowIcon} alt="Arrow icon" className="arrow-icon" onClick={() => redirectToEvent()}/>
+      
     </div>
   );
 }

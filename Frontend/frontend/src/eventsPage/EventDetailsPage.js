@@ -12,12 +12,15 @@ function EventDetailsPage() {
   const [event, setEvent] = useState(null);
   const [countdown, setCountdown] = useState('');
   const [participantsData, setParticipants] = useState([]);
+  const [observations, setObservations] = useState([]);
   const navigate = useNavigate();
 
   const [followingUsers, setFollowingUsers] = useState([]);
   const [usernames, setUsernames] = useState({});
   const [invitedUsers, setInvitedUsers] = useState([]);
   const [equipmentData, setEquipmentData] = useState([]);
+  const [observationUsernames, setObservationUsernames] = useState({});
+  const [images, setImages] = useState([]);
 
   const getUserIdFromCookie = () => {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
@@ -39,33 +42,29 @@ function EventDetailsPage() {
         calculateCountdown(data.start_time);
         console.log('Event Details:', data);
 
+        let equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/star_observation/';
+        if (data.title.toLowerCase().includes('planet')) {
+          equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/planet/';
+        } else if (data.title.toLowerCase().includes('solar') && data.title.toLowerCase().includes('eclipse')) {
+          equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/solar_eclipse/';
+        } else if (data.title.toLowerCase().includes('lunar') && data.title.toLowerCase().includes('eclipse')) {
+          equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/lunar_eclipse/';
+        }
 
-
-
-    let equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/star_observation/';
-    if (data.title.toLowerCase().includes('planet')) {
-      equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/planet/';
-    } else if (data.title.toLowerCase().includes('solar') && data.title.toLowerCase().includes('eclipse')) {
-      equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/solar_eclipse/';
-    } else if (data.title.toLowerCase().includes('lunar') && data.title.toLowerCase().includes('eclipse')) {
-      equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/lunar_eclipse/';
-    } else {
-      equipmentEndpoint = 'http://127.0.0.1:8000/polaris/equipment/star_observation/';
-    }
-
-    const equipmentResponse = await fetch(equipmentEndpoint);
-    if (!equipmentResponse.ok) {
-      throw new Error('Failed to fetch equipment details');
-    }
-    const equipmentData = await equipmentResponse.json();
-    console.log('Equipment:', equipmentData.equipment.map(e => e.name));
-    setEquipmentData(equipmentData);
+        const equipmentResponse = await fetch(equipmentEndpoint);
+        if (!equipmentResponse.ok) {
+          throw new Error('Failed to fetch equipment details');
+        }
+        const equipmentData = await equipmentResponse.json();
+        console.log('Equipment:', equipmentData.equipment.map(e => e.name));
+        setEquipmentData(equipmentData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     const calculateCountdown = (startTime) => {
+      console.log(countdown);
       const eventDate = new Date(startTime);
       intervalId = setInterval(() => {
         const now = new Date();
@@ -73,7 +72,8 @@ function EventDetailsPage() {
 
         if (timeLeft <= 0) {
           clearInterval(intervalId);
-          setCountdown('The event has started!');
+          setCountdown('The event is over!');
+          fetchObservations();
           return;
         }
 
@@ -90,6 +90,33 @@ function EventDetailsPage() {
           setCountdown(`${remainingDays}d ${hours}h ${minutes}m ${seconds}s`);
         }
       }, 1000);
+    };
+
+    const fetchObservations = async () => {
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/polaris/observations/`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch observations');
+        }
+        const data = await response.json();
+        const eventObservations = data.filter(obs => obs.event === parseInt(eventId));
+        setObservations(eventObservations.slice(0, 3));
+
+        const observationUsernamesData = await Promise.all(eventObservations.map(async (obs) => {
+          const userResponse = await fetch(`http://127.0.0.1:8000/polaris/users/${obs.user}`);
+          if (!userResponse.ok) {
+            throw new Error(`Failed to fetch user data for user ID: ${obs.user}`);
+          }
+          const userData = await userResponse.json();
+          return { userId: obs.user, username: userData.username };
+        }));
+
+        // Create a map of userId to username
+        const usernamesMap = Object.fromEntries(observationUsernamesData.map(({ userId, username }) => [userId, username]));
+        setObservationUsernames(usernamesMap);
+      } catch (error) {
+        console.error('Error fetching observations:', error);
+      }
     };
 
     fetchEventDetails();
@@ -145,6 +172,31 @@ function EventDetailsPage() {
       console.error('Error fetching usernames:', error);
     }
   };
+
+  const fetchImages = async () => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/polaris/images/?event=${eventId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch images');
+      }
+      const imageData = await response.json();
+      console.log("image data:", imageData);
+      return imageData;
+    } catch (error) {
+      console.error('Error fetching images:', error);
+      return [];
+    }
+  };
+  
+  
+  useEffect(() => {
+    if (countdown === 'The event is over!') {
+      fetchImages().then(imagesData => {
+        setImages(imagesData);
+      });
+    }
+  }, [countdown]);
+  
 
   useEffect(() => {
     const userId = getUserIdFromCookie();
@@ -229,75 +281,114 @@ function EventDetailsPage() {
 
   return (
     <div className="event-details-container">
+  
       <div className="event-details-content">
         <h2 className='title-event-page'>{event.title}</h2>
+  
         <div className='rows-with-details'>
-        <div className="start-time-container">
-          <img src={clockIcon} alt="Clock icon" className="clock-icon" /> 
-          <p> {formatDate(event.start_time)}</p>
+  
+          <div className="start-time-container">
+            <img src={clockIcon} alt="Clock icon" className="clock-icon" /> 
+            <p> {formatDate(event.start_time)}</p>
+          </div>
+          
+          <div className="start-time-container">
+            <img src={descriptionIcon} alt="Description icon" className="clock-icon" /> 
+            <p> {event.description.replace('(Preferred event option)', '').trim()}</p>
+          </div>
+  
+          <div className="start-time-container">
+            <img src={locationIcon} alt="Location icon" className="clock-icon" /> 
+            <p>{event.location_latitude}; {event.location_longitude}</p>
+          </div>
+  
+          <div className="start-time-container">
+            <img src={telescopeIcon} alt="Equipment icon" className="clock-icon" /> 
+            <p><strong>Equipment:</strong></p>
+            {equipmentData && equipmentData.equipment && (
+              <p>
+                {equipmentData.equipment.slice(0, 4).map(e => e.name).join(', ')}
+              </p>
+            )}
+          </div>
+  
+          <div className="start-time-container">
+            <img src={participantsIcon} alt="Participants icon" className="clock-icon" />
+            <p><strong>Participants:</strong></p>
+          </div>
+  
+          <ul className="participants-row">
+            {participantsData.length > 0 ? (
+              participantsData.map(participant => (
+                <li key={participant.id} className="participant-item">
+                  <div className='participant-box'>
+                    <a onClick={() => redirectToUserProfile(participant.username)}>{participant.username}</a>
+                    <p>{followingUsers.includes(participant.id) ? "friend" : "invited"}</p>
+                  </div>
+                </li>
+              ))
+            ) : (
+              <p2>No people have confirmed yet.</p2>
+            )}
+          </ul>
+  
         </div>
-        <div className="start-time-container">
-          <img src={descriptionIcon} alt="Description icon" className="clock-icon" /> 
-          <p> {event.description.replace('(Preferred event option)', '').trim()}</p>
-        </div>
-        <div className="start-time-container">
-          <img src={locationIcon} alt="Location icon" className="clock-icon" /> 
-          <p>{event.location_latitude}; {event.location_longitude}</p>
-        </div>
-        <div className="start-time-container">
-          <img src={telescopeIcon} alt="Equipment icon" className="clock-icon" /> 
-          <p><strong>Equipment:</strong></p>
-          {equipmentData && equipmentData.equipment && (
-  <p>
-    {equipmentData.equipment.slice(0,4).map(e => e.name).join(', ')}
-  </p>
-)}
-        </div>
-        <div className="start-time-container">
-          <img src={participantsIcon} alt="Participants icon" className="clock-icon" />
-          <p><strong>Participants:</strong></p>
-        </div>
-        <ul className="participants-row">
-          {participantsData.length > 0 ? (
-            participantsData.map(participant => (
-              <li key={participant.id} className="participant-item">
-                <div className='participant-box'>
-                  <a onClick={() => redirectToUserProfile(participant.username)}>{participant.username}</a>
-                  <p>{followingUsers.includes(participant.id) ? "-friend-" : "-invited-"}</p>
-                </div>
-              </li>
-            ))
-          ) : (
-            <p2>No people have confirmed yet.</p2>
-          )}
-        </ul>
-      </div>
       </div>
       <div className="countdown-container">
         <p><strong>Time remaining:</strong></p>
+  
         <div className="countdown">
           {countdown}
         </div>
+        
       </div>
-
-      <div class="vertical-white-line"></div>
-
-      <div className='invite-more-people'>
-        <h2>Invite more people! </h2>
-        {nonParticipants.slice(0,3).map(([id, userData]) => (
-          <div key={id}>
-            <p className='user-to-invite'>{userData.username}</p>
-            <p>{userData.email}</p>
-            {invitedUsers.includes(userData.email) ? (
-            <p>Invited</p>
+      <div className="vertical-white-line"></div>
+     
+  
+      {countdown === 'The event is over!' ? (
+        <div className='observations-section'>
+          <h2>Observations</h2>
+          {observations.length > 0 ? (
+            observations.map(obs => (
+              <div key={obs.id} className="observation-item">
+                <p><strong>User:</strong> {observationUsernames[obs.user]}</p>
+                <p><strong>Description:</strong> {obs.personal_observations}</p>
+              </div>
+            ))
           ) : (
-            <button onClick={() => sendInvitationEmail(userData.email, event)}>Invite</button>
+            <p>No observations available.</p>
           )}
-          </div>
-        ))}
-      </div>
+          {images.length > 0 && (
+            <div className="event-images">
+              <h2>Event Images</h2>
+              {images.map(image => (
+                <img key={image.id} src={image.image.replace('/media', '')} alt={image.title} />
+              ))}
+            </div>
+          )}
+        </div>
+
+      ) : (
+        <div>
+        <div className='invite-more-people'>
+          <h2>Invite more people!</h2>
+          {nonParticipants.slice(0, 3).map(([id, userData]) => (
+            <div key={id}>
+              <p className='user-to-invite'>{userData.username}</p>
+              <p>{userData.email}</p>
+              {invitedUsers.includes(userData.email) ? (
+                <p>Invited</p>
+              ) : (
+                <button onClick={() => sendInvitationEmail(userData.email, event)}>Invite</button>
+              )}
+            </div>
+          ))}
+        </div>
+        </div>
+      )}
     </div>
   );
+  
 }
 
 export default EventDetailsPage;

@@ -550,10 +550,11 @@
  }
 
  .success-message a{
-  font-size: 40px;
-  margin-left: 39%;
+  font-size: 20px;
+  margin-left: 44%;
   position: fixed;
-  margin-top: 220px;
+  margin-top: 250px;
+  cursor: pointer;
  }
 
  .success-message .message-invitation{
@@ -565,6 +566,7 @@
   position: fixed;
   margin-left: 510px;
   margin-top: 390px;
+  cursor: pointer;
  }
 /* 
  .card-container {

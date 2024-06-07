@@ -907,14 +907,17 @@ def send_email(to_email, subject, body):
 
 @csrf_exempt
 def send_invitation_email(to_email, event_details):
-    subject = 'You are invited to an event!'
-    message = f"Hello,\n\nYou are invited to the following event:\n\n" \
-              f"Title: {event_details.get('title')}\n" \
-              f"Description: {event_details.get('description')}\n" \
-              f"Time: {event_details.get('start_time')}\n\n" \
-              "Best regards,\nYour Event Organizer"
+    subject = 'You’re invited to an Astronomy Event!'
+    message = f"Hi there,\n\nWe’re happy to invite you to an upcoming event that we think you’ll love!\n\n" \
+              f"Event: {event_details.get('title')}\n" \
+              f"Details: {event_details.get('description')}\n" \
+              f"Starting at: {event_details.get('start_time')}\n\n" \
+              "We hope you can join us for what promises to be a fantastic time.\n\n" \
+              "Please accept or decline the invitation in your Polaris account.\n\n" \
+              "Cheers,\nThe Polaris Team 🌠"
 
     send_email(to_email, subject, message)
+
 
 
 @csrf_exempt

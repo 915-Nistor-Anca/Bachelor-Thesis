@@ -1,19 +1,33 @@
 .event-details-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-  
-  .event-details-content {
-    width: calc(50% - 20px); 
-  }
-  
-  .countdown-container {
-    width: calc(50% - 20px); 
-  }
-  
-  .countdown {
-    font-size: 24px; 
-    font-weight: bold;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-height: 100vh; 
+  overflow-y: auto;
+}
+
+.event-details-content {
+  width: 50%;
+}
+
+.countdown-container {
+  width: 50%;
+}
+
+.countdown {
+  font-size: 24px; 
+  font-weight: bold;
+}
+
+.observations-section {
+  margin-top: 350px;
+  margin-left: 200px;
+  width: 50%;
+}
+
+.participants-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 20%;
+}
