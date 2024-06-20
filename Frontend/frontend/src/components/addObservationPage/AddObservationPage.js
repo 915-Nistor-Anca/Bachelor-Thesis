@@ -8,9 +8,6 @@ function AddObservationPage() {
   const navigate = useNavigate();
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
-
-
-  //getting equipment and sky condition data from the server
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [skyConditionsOptions, setSkyConditionsOptions] = useState([]);
 
@@ -280,6 +277,19 @@ function AddObservationPage() {
                 onChange={changeObservationPrivacy}
               />
               <span className={`privacy-point ${observationPrivacy === 1 ? 'private' : 'public'}`} />
+            </label>
+          </div>
+
+
+          <div className="form-group">
+            <label className="label-add-page">
+              Event:
+              <select value={selectedSkyCondition} onChange={handleSkyConditionChange} className="input-add-page">
+                <option value="">Select Event</option>
+                {/* {skyConditionsOptions.map((condition, index) => (
+                  <option key={index} value={condition.id}>{condition}</option>
+                ))} */}
+              </select>
             </label>
           </div>
 

@@ -1,9 +1,8 @@
-// src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Layout from './components/Layout';
 import FirstPage from './components/firstPage/FirstPage';
-import Planets from './PlanetsPage';
+import Planets from './components/mainPage/PlanetsPage';
 import Login from './components/loginPage/LoginPage';
 import Register from './components/registerPage/RegisterPage';
 import MainPage from './components/mainPage/MainPage';
@@ -21,6 +20,11 @@ import PlanEventPage from './components/planEvent/PlanEventPage';
 import CalendarPage from './components/planEvent/CalendarPage';
 import EventsPage from './eventsPage/EventsPage';
 import EventDetailsPage from './eventsPage/EventDetailsPage';
+import EventImagesPage from './eventsPage/EventImagesPage';
+import NotificationsPage from './components/notifications/NotificationsPage';
+import PlanetEncyclopedia from './components/mainPage/PlanetEncyclopedia';
+import EncyclopediaPage from './components/mainPage/EncyclopediaPage';
+import DiscoverPeople from './components/discoverPeople/DiscoverPeople';
 
 function App() {
   return (
@@ -46,6 +50,12 @@ function App() {
           <Route path="/calendar" element={<Layout><CalendarPage /></Layout>} />
           <Route path="/events" element={<Layout><EventsPage/></Layout>}/>
           <Route path="/events/:eventId" element={<Layout><EventDetailsPage /></Layout>} />
+          <Route path="/events/:eventId/images" element={<Layout><EventImagesPage /></Layout>} />
+          <Route path="/notifications" element={<Layout><NotificationsPage/></Layout>}/>
+          <Route path="/planets" element={<Layout><Planets/></Layout>}/>
+          <Route path="/planetencyclopedia" element={<Layout><PlanetEncyclopedia/></Layout>}/>
+          <Route path="/encyclopedia" element={<Layout><EncyclopediaPage/></Layout>}/>
+          <Route path="/discoverpeople" element={<Layout><DiscoverPeople/></Layout>}/>
         </Routes>
       </Router>
     </React.Fragment>

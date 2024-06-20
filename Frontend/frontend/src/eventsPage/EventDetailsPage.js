@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import './EventDetailsPage.css';
 import clockIcon from './clock.png';
-import descriptionIcon from "./description.png";
+import descriptionIcon from './description.png';
 import locationIcon from './location.png';
 import participantsIcon from './participants.png';
 import telescopeIcon from './telescope.png';
-
+import chatIcon from './chatIcon.png';
 function EventDetailsPage() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
@@ -173,31 +173,6 @@ function EventDetailsPage() {
     }
   };
 
-  const fetchImages = async () => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8000/polaris/images/?event=${eventId}`);
-      if (!response.ok) {
-        throw new Error('Failed to fetch images');
-      }
-      const imageData = await response.json();
-      console.log("image data:", imageData);
-      return imageData;
-    } catch (error) {
-      console.error('Error fetching images:', error);
-      return [];
-    }
-  };
-  
-  
-  useEffect(() => {
-    if (countdown === 'The event is over!') {
-      fetchImages().then(imagesData => {
-        setImages(imagesData);
-      });
-    }
-  }, [countdown]);
-  
-
   useEffect(() => {
     const userId = getUserIdFromCookie();
     fetchUserProfile(userId);
@@ -243,8 +218,12 @@ function EventDetailsPage() {
 
   const csrfToken = getCsrfToken();
 
-  const sendInvitationEmail = async (email, event) => {
+  const sendInvitationEmail = async (email, event, username) => {
     try {
+      const response0 = await fetch(`http://127.0.0.1:8000/polaris/get-user-id/${username}/`);
+      const receiverData = await response0.json();
+
+      const loggedInUserId = getUserIdFromCookie();
       const response = await fetch('http://127.0.0.1:8000/polaris/send-invitation/', {
         method: 'POST',
         headers: {
@@ -257,6 +236,9 @@ function EventDetailsPage() {
             title: event.title,
             description: event.description,
             start_time: event.start_time,
+            id: eventId,
+            sender_user_id: loggedInUserId,
+            receiver_user_id: receiverData.id
           },
         }),
       });
@@ -281,12 +263,9 @@ function EventDetailsPage() {
 
   return (
     <div className="event-details-container">
-  
       <div className="event-details-content">
         <h2 className='title-event-page'>{event.title}</h2>
-  
         <div className='rows-with-details'>
-  
           <div className="start-time-container">
             <img src={clockIcon} alt="Clock icon" className="clock-icon" /> 
             <p> {formatDate(event.start_time)}</p>
@@ -296,27 +275,32 @@ function EventDetailsPage() {
             <img src={descriptionIcon} alt="Description icon" className="clock-icon" /> 
             <p> {event.description.replace('(Preferred event option)', '').trim()}</p>
           </div>
-  
+
           <div className="start-time-container">
             <img src={locationIcon} alt="Location icon" className="clock-icon" /> 
             <p>{event.location_latitude}; {event.location_longitude}</p>
           </div>
-  
+
           <div className="start-time-container">
             <img src={telescopeIcon} alt="Equipment icon" className="clock-icon" /> 
-            <p><strong>Equipment:</strong></p>
+            <p><strong>Recommended equipment:</strong></p>
             {equipmentData && equipmentData.equipment && (
               <p>
                 {equipmentData.equipment.slice(0, 4).map(e => e.name).join(', ')}
               </p>
             )}
           </div>
-  
+
+          <div className="start-time-container">
+            <img src={chatIcon} alt="Chat icon" className="clock-icon" /> 
+            <p><strong>Go to the event group chat</strong></p>
+          </div>
+
           <div className="start-time-container">
             <img src={participantsIcon} alt="Participants icon" className="clock-icon" />
             <p><strong>Participants:</strong></p>
           </div>
-  
+
           <ul className="participants-row">
             {participantsData.length > 0 ? (
               participantsData.map(participant => (
@@ -331,20 +315,21 @@ function EventDetailsPage() {
               <p2>No people have confirmed yet.</p2>
             )}
           </ul>
-  
+          {countdown === 'The event is over!' ? (
+            <div className="images-link">
+              <Link to={`/events/${eventId}/images`}>View Event Images</Link>
+            </div>
+          ) : null}
         </div>
       </div>
       <div className="countdown-container">
         <p><strong>Time remaining:</strong></p>
-  
         <div className="countdown">
           {countdown}
         </div>
-        
       </div>
       <div className="vertical-white-line"></div>
      
-  
       {countdown === 'The event is over!' ? (
         <div className='observations-section'>
           <h2>Observations</h2>
@@ -358,18 +343,8 @@ function EventDetailsPage() {
           ) : (
             <p>No observations available.</p>
           )}
-          {images.length > 0 && (
-            <div className="event-images">
-              <h2>Event Images</h2>
-              {images.map(image => (
-                <img key={image.id} src={image.image.replace('/media', '')} alt={image.title} />
-              ))}
-            </div>
-          )}
         </div>
-
       ) : (
-        <div>
         <div className='invite-more-people'>
           <h2>Invite more people!</h2>
           {nonParticipants.slice(0, 3).map(([id, userData]) => (
@@ -379,16 +354,14 @@ function EventDetailsPage() {
               {invitedUsers.includes(userData.email) ? (
                 <p>Invited</p>
               ) : (
-                <button onClick={() => sendInvitationEmail(userData.email, event)}>Invite</button>
+                <button onClick={() => sendInvitationEmail(userData.email, event, userData.username)}>Invite</button>
               )}
             </div>
           ))}
         </div>
-        </div>
       )}
     </div>
   );
-  
 }
 
 export default EventDetailsPage;

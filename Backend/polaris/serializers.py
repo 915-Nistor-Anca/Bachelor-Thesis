@@ -1,10 +1,26 @@
 from rest_framework import serializers
-from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event, Image
+from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event, Image, Notification, \
+    Constellation, Planet
 
+
+class PlanetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Planet
+        fields = '__all__'
+
+class ConstellationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Constellation
+        fields = '__all__'
 
 class ImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
+        fields = '__all__'
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
         fields = '__all__'
 
 class StarSerializer(serializers.ModelSerializer):
@@ -47,3 +63,4 @@ class EventSerializer(serializers.ModelSerializer):
         model = Event
         fields = ['id', 'title', 'description', 'organizer', 'participants', 'location_latitude', 'location_longitude',
                   'start_time', 'created_at']
+

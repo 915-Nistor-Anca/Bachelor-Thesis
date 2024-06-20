@@ -1,0 +1,35 @@
+.planetencyclopedia {
+    text-align: center;
+    font-family: Arial, sans-serif;
+  }
+  
+  .planetencyclopedia-header {
+    /* background-color: #282c34; */
+    padding: 20px;
+    color: white;
+  }
+  
+  .planets-listplanetencyclopedia {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
+  
+  .planetplanetencyclopedia {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    max-width: 200px;
+    text-align: left;
+  }
+  
+  .planetplanetencyclopedia img {
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  
+  .planetplanetencyclopedia h2 {
+    font-size: 1.5em;
+  }
+  

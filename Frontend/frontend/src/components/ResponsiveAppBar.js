@@ -150,9 +150,9 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
             <Tooltip title="Notifications">
               <IconButton sx={{ p: 0, marginRight: '-216px' }}>
-                {/* <Badge badgeContent={4} color="error"> */}
+                <Badge badgeContent={3} color="error">
                   <NotificationsIcon style={{ color: 'white' }} />
-                {/* </Badge> */}
+                </Badge>
               </IconButton>
             </Tooltip>
             <Tooltip title="Profile">

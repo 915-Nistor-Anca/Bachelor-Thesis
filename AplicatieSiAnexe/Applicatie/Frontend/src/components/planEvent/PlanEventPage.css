@@ -1,0 +1,652 @@
+.plan-event-description-page {
+    font-family: 'Times New Roman', Times, serif;
+    padding: 20px;
+    /* border-radius: 8px; */
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
+    height: 100vh; 
+    /* overflow-y: auto;  */
+    background-image: url("nasa-image-1.png");
+    background-size: cover;
+    position: relative;
+  }
+  
+  .plan-event-description-page h1 {
+    font-size: 65px;
+    color: #ffffff;
+    position: fixed;
+    margin-top: 450px;
+    font-style: italic;
+    text-shadow: 2px 2px 4px black; 
+    margin-left: 20px;
+  }
+
+
+  .plan-event-description-page h2{
+    text-shadow: 2px 2px 4px black; 
+  }
+
+  .plan-event-description-page hr{
+    margin-top: 540px;
+    width: 40%;
+    margin-left: 20px;
+  }
+
+  .plan-event-description-page p1{
+    margin-top: 540px;
+    width: 40%;
+    margin-left: 20px;
+    font-size: 20px;
+  }
+
+  .steps-description-page {
+    margin-left: 770px;
+    position: fixed;
+    margin-top: -550px;
+    list-style-type: disc;
+    width: 40%;
+    font-size: 17px;
+    text-align: center;
+    border: 2px solid #ffffff;
+    padding: 15px; 
+    border-radius: 30px;
+    background-color: rgba(255, 192, 203, 0.3);
+  }
+  .steps-description-page2 {
+    margin-left: 770px;
+    position: fixed;
+    margin-top: -400px;
+    list-style-type: disc;
+    width: 40%;
+    font-size: 17px;
+    text-align: center;
+    border: 2px solid #ffffff;
+    padding: 15px; 
+    border-radius: 30px;
+    background-color: rgba(255, 192, 203, 0.3);
+  }
+  .steps-description-page3 {
+    margin-left: 770px;
+    position: fixed;
+    margin-top: -250px;
+    list-style-type: disc;
+    width: 40%;
+    font-size: 17px;
+    text-align: center;
+    border: 2px solid #ffffff;
+    padding: 15px; 
+    border-radius: 30px;
+    background-color: rgba(255, 192, 203, 0.3);
+  }
+  .steps-description-page4 {
+    margin-left: 770px;
+    position: fixed;
+    margin-top: -100px;
+    list-style-type: disc;
+    width: 40%;
+    font-size: 17px;
+    text-align: center;
+    border: 2px solid #ffffff;
+    padding: 15px; 
+    border-radius: 30px;
+    background-color: rgba(255, 192, 203, 0.3);
+  }
+
+  .plan-event-description-page p {
+      font-size: 20px;
+      color: #ffffff;
+      margin-top: -2px;
+      margin-left: 20px;
+    }
+
+    .plan-observation-button {
+      position: fixed;
+      margin-top: 10px;
+      margin-left: 1010px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 15px 30px; 
+      font-size: 18px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+    }
+
+    .plan-observation-button:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    /* map page */
+
+    .plan-event-map-page{
+      position: fixed;
+      font-family: 'Times New Roman', Times, serif;
+      padding: 20px;
+      height: 100vh; 
+      background-image: url("nasa-image-1.png");
+      background-size: cover;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .plan-event-map-page h1{
+      text-shadow: 2px 2px 4px black;
+      font-size: 50px;
+    }
+
+    .plan-event-map-page p{
+      text-shadow: 2px 2px 4px black;
+      font-size: 20px;
+    }
+
+
+    .map-container-plan-event-page {
+      width: 60%;
+      height: 500px; 
+      border: 1px solid #ccc;
+      border-radius: 7px;
+      overflow: hidden;
+    }
+
+    .location-map {
+      position: fixed;
+      margin-top: 500px;
+      margin-left: 1000px;
+    }
+
+    .plan-observation-button-map {
+      position: fixed;
+      margin-top: 560px;
+      margin-left: 1150px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 15px 30px; 
+      font-size: 15px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .plan-observation-button-map:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+
+
+    .observation-options {
+      background-image: url("nasa-image-1.png");
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+    }
+
+    .pink-background {
+      width: 35%;
+      background-color: rgba(255, 192, 203, 0.3);
+      border: 2px solid white;
+      border-radius: 20px; 
+      margin-left: 20px;
+    }
+    .pink-background-2{
+      width: 60%;
+      background-color: rgba(255, 192, 203, 0.3);
+      border: 2px solid white;
+      border-radius: 20px; 
+    }
+
+    .targets{
+      margin-left: -150px;
+    }
+
+    .checkbox{
+      font-size: 20px;
+      /* padding: 1px; */
+    }
+
+
+    .observation-options p{
+      font-size: 30px;
+      margin-left: 20px;
+    }
+
+    .observation-options h2{
+      font-size: 50px;
+      /* font-style: italic; */
+      text-shadow: 2px 2px 4px black;
+      margin-left: 20px; 
+    }
+
+    /* months */
+
+    .months-plan{
+      position: fixed;
+      margin-top: 450px;
+      font-size: 25px;
+      margin-left: 20px;
+      width: 58%;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+
+    .plan-observation-button-targets {
+      position: fixed;
+      margin-top: 560px;
+      margin-left: 150px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 15px 30px; 
+      font-size: 18px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .plan-observation-button-targets:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .planet-options {
+      position: fixed;
+      margin-top: 140px;
+      margin-left: 650px;
+      width: 50%;
+      background-color: rgba(255, 192, 203, 0.3);
+      border: 2px solid white;
+      border-radius: 20px;
+    }
+
+    .planet-options-2 {
+      position: fixed;
+      margin-top: 390px;
+      margin-left: 650px;
+      font-size: 20px;
+    }
+    
+    .planet-bubbles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .planet-bubble {
+      border-radius: 50%;
+      padding: 10px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      background-color: #c68dd9;
+      border: 1px solid #93a5ff;
+      color: black;
+    }
+    
+    .planet-bubble.selected {
+      background-color: #d49bde;
+      color: rgb(255, 255, 255);
+    }
+
+    .choose-targets-button {
+      position: fixed;
+      margin-top: 40px;
+      margin-left: 150px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 10px 30px; 
+      font-size: 16px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .choose-targets-button:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .choose-months-button {
+      position: fixed;
+      margin-top: 40px;
+      margin-left: 130px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 10px 30px; 
+      font-size: 16px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .choose-months-button:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .planet-bubbles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .planet-bubble {
+      background-color: #eee;
+      border-radius: 50%;
+      padding: 10px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+
+    .planet-options input[type="time"] {
+      border: 2px solid rgb(180, 145, 213);;
+      padding: 10px;
+      border-radius: 20px;
+      font-size: 16px;
+    }
+    
+
+
+    .months-plan input[type="number"] {
+      border: 2px solid rgb(180, 145, 213);
+      padding: 10px;
+      border-radius: 20px;
+      font-size: 16px;
+    }
+
+    .final-data {
+      margin-left: 500px;
+    position: fixed;
+    margin-top: 100px;
+    list-style-type: disc;
+    width: 40%;
+    font-size: 17px;
+    text-align: center;
+    border: 2px solid #ffffff;
+    padding: 15px; 
+    border-radius: 30px;
+    background-color: rgba(255, 192, 203, 0.3);
+    }
+    
+
+    .recommend-button {
+      position: fixed;
+      margin-top: 40px;
+      margin-left: 130px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 15px 30px; 
+      font-size: 16px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .recommend-button:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .check-button {
+      position: fixed;
+      margin-top: 340px;
+      margin-left: 130px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      padding: 15px 35px; 
+      font-size: 16px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+      /* text-shadow: 2px 2px 4px black; */
+    }
+
+    .check-button:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .final-data-button {
+      position:fixed;
+      margin-top: 500px;
+      margin-left: 725px;
+      background-color: transparent;
+      box-shadow: 0 4px 8px white;
+      color: #ffffff;
+      /* padding: 20px 35px;  */
+      font-size: 16px; 
+      border: 2px solid white;
+      border-radius: 20px; 
+      cursor: pointer;
+    }
+
+    .final-data p{
+      font-size: large;
+    }
+
+    .final-data-button:hover {
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+
+    .final-data-part{
+      background-image: url("nasa-image-1.png");
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+    }
+
+    .recommended-events{
+      background-image: url("nasa-image-1.png");
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+    }
+
+    .recommended-events p{
+      font-size: 20px;
+      margin-left: 20px;
+    }
+
+    .choose-event-button{
+      background-color: transparent;
+      color: #ffffff;
+      font-size: 16px; 
+      border: 2px solid white;
+    }
+
+    .choose-event-button:hover{
+      background-color: rgba(255, 192, 203, 0.3);
+      transition: background-color 0.3s ease;
+    }
+    
+    .calendar-part {
+      position: fixed;
+      margin-top: -550px;
+      margin-left: 650px;
+      width: 50%;
+      background-color: rgba(255, 192, 203, 0.3);
+      border: 2px solid white;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center;
+      text-align: center;
+    }
+
+  .loading-page{
+    background-image: url("nasa-image-1.png");
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      width: 100vw;
+      position: fixed;
+  }
+
+  .loading-text{
+    position:fixed;
+    margin-top: 550px;
+    margin-left: 625px;
+    font-size: 40px;
+    font-style: italic;
+  }
+    
+ .confirmation-dialog-button{
+    background-color: transparent;
+      color: #ffffff;
+      font-size: 16px; 
+      border: 2px solid white;
+ }
+
+ .success-message {
+  background-image: url("nasa-image-1.png");
+  background-size: cover;
+  background-position: center;
+  height: 100vh; 
+  width: 100vw;
+  position: fixed;
+  overflow: auto;
+  box-sizing: border-box; 
+}
+
+
+ .success-message p{
+  font-size: 30px;
+  text-align: center;
+ }
+
+ .success-message p2{
+  font-size: 20px;
+  text-align: center;
+ }
+
+
+ .success-message button{
+    background-color: transparent;
+    color: #ffffff;
+    font-size: 16px; 
+    border: 2px solid white;
+
+ }
+
+ .success-message a{
+  font-size: 20px;
+  margin-left: 44%;
+  position: fixed;
+  margin-top: 250px;
+  cursor: pointer;
+ }
+
+ .success-message .message-invitation{
+  width: 50%;
+  margin-left: 350px;
+ }
+
+ .arrow-icon{
+  position: fixed;
+  margin-left: 510px;
+  margin-top: 390px;
+  cursor: pointer;
+ }
+/* 
+ .card-container {
+  display: flex;
+  justify-content: center;
+} */
+
+ .success-message .p-from-success{
+  color: #c68dd9;
+  font-style: italic;
+  font-size: 40px;
+  /* border: 2px solid white; */
+ }
+
+ .invite-card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  margin: 10px 0;
+  width: 60%;
+  box-sizing: border-box;
+  overflow: hidden;
+  justify-content: center;
+}
+
+.invite-card-content {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.invite-card img {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.invite-card p2 {
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.invite-card .email {
+  margin-left: 5px;
+}
+
+.invite-card button {
+  align-self: stretch;
+  padding: 5px 10px;
+  background-color: #375dad;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 30px;
+}
+
+.invite-card button:hover {
+  background-color: #2650ab;
+}
+
+.people-to-invite {
+  display: grid;
+  grid-template-columns: 400px 400px 400px 400px;
+  /* gap: 10px; */
+}
+
+.invite-card-content p2{
+  font-size: 25px;
+}
+
+.invite-card-content p2:hover{
+  color: #2650ab;
+  cursor: pointer;
+}

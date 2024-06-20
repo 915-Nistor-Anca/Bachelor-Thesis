@@ -6,9 +6,11 @@ from rest_framework import generics
 from skyfield.api import load, Topos
 from skyfield.almanac import find_discrete, risings_and_settings, oppositions_conjunctions, moon_phases
 from datetime import timedelta
-from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event
+from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event, Notification, Planet, \
+    Constellation
 from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
-    StarSerializer, UserProfileSerializer, EventSerializer, ImageSerializer
+    StarSerializer, UserProfileSerializer, EventSerializer, ImageSerializer, NotificationSerializer, PlanetSerializer, \
+    ConstellationSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -66,6 +68,10 @@ class UserList(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class NotificationList(generics.ListCreateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
 class UserProfileList(generics.ListCreateAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
@@ -85,6 +91,10 @@ class EquipmentDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
 
+class NotificationDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
 
 class AllObservationList(generics.ListCreateAPIView):
     queryset = Observation.objects.all()
@@ -98,6 +108,15 @@ class ObservationList(generics.ListCreateAPIView):
     def get_queryset(self):
         user_id = self.kwargs['user_id']
         return Observation.objects.filter(user_id=user_id)
+
+
+class NotificationUserList(generics.ListCreateAPIView):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        return Notification.objects.filter(notification_receiver=user_id)
 
 class EventList(generics.ListCreateAPIView):
     queryset = Event.objects.all()
@@ -296,9 +315,6 @@ def get_best_observation_times(request, latitude, longitude, planet_name, number
         return JsonResponse({'error': str(e)}, status=400)
 
 
-from datetime import datetime, timedelta
-import ephem
-
 def lunar_eclipse_prediction(request, latitude, longitude, number_of_days):
     try:
         # Convert latitude and longitude to strings
@@ -317,23 +333,19 @@ def lunar_eclipse_prediction(request, latitude, longitude, number_of_days):
         sun = ephem.Sun()
         observer = ephem.Observer()
 
-        # Set observer's latitude and longitude
-        observer.lat = observer_latitude  # Latitude of the observing location
-        observer.lon = observer_longitude  # Longitude of the observing location
-        observer.elevation = 0  # Place the observer at sea level
-        observer.pressure = 0  # Disable atmospheric refraction
+        observer.lat = observer_latitude
+        observer.lon = observer_longitude
+        observer.elevation = 0
+        observer.pressure = 0
 
         eclipse_times = []
 
-        # Loop every hour
         while curtime <= endtime:
             observer.date = curtime
 
-            # Compute the positions of the Sun and the Moon relative to the observer
             moon.compute(observer)
             sun.compute(observer)
 
-            # Calculate the separation between the Moon and the Sun, convert it from radians to degrees
             sep = abs(float(ephem.separation(moon, sun)) / 0.01745329252 - 180)
 
             # Eclipse occurs if the separation is less than 0.9°
@@ -342,7 +354,6 @@ def lunar_eclipse_prediction(request, latitude, longitude, number_of_days):
                 # An eclipse cannot happen more than once in a day, so skip 24 hours when an eclipse is found
                 curtime += timedelta(days=1)
             else:
-                # Advance an hour if eclipse is not found
                 curtime += timedelta(minutes=5)
 
         return JsonResponse({'eclipse_times': eclipse_times, 'end_time': endtime})
@@ -373,7 +384,6 @@ def solar_eclipse_prediction(request, latitude, longitude, number_of_days):
         moon.compute(observer)
         sun.compute(observer)
 
-        # Calculate separation between the moon and the sun, convert it from radians to degrees
         sep = abs((float(ephem.separation(moon, sun)) / 0.01745329252))
 
         # A solar eclipse happens if Sun-Earth-Moon alignment is <1.5976°
@@ -382,7 +392,6 @@ def solar_eclipse_prediction(request, latitude, longitude, number_of_days):
             # Skip 24 hours when an eclipse is found
             curtime += timedelta(days=1)
         else:
-            # Advance five minutes if an eclipse is not found
             curtime += timedelta(minutes=5)
 
     return JsonResponse({'eclipse_times': eclipses})
@@ -860,18 +869,6 @@ def get_best_times_and_lunar_solar_eclipse(request, latitude, longitude, planet_
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-
-from django.core.mail import send_mail
-from django.conf import settings
-
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
-from django.conf import settings
-
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -918,6 +915,15 @@ def send_invitation_email(to_email, event_details):
 
     send_email(to_email, subject, message)
 
+    notification_description = f"You were invited to an event! The event is {event_details.get('title')} " \
+                                f"in {event_details.get('start_time')}."
+    notification_purpose = f"event;{event_details.get('id')}"
+    Notification.objects.create(
+        description=notification_description,
+        purpose=notification_purpose,
+        notification_sender_id=event_details.get('sender_user_id'),
+        notification_receiver_id=event_details.get('receiver_user_id')
+    )
 
 
 @csrf_exempt
@@ -962,3 +968,12 @@ def get_equipment_list(request, observation_type):
     equipment_data = list(equipment_list.values())
 
     return JsonResponse({'equipment': equipment_data})
+
+
+class PlanetList(generics.ListCreateAPIView):
+    queryset = Planet.objects.all()
+    serializer_class = PlanetSerializer
+
+class ConstellationList(generics.ListCreateAPIView):
+    queryset = Constellation.objects.all()
+    serializer_class = ConstellationSerializer

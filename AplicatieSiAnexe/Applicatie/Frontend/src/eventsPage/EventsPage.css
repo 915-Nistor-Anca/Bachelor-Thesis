@@ -1,0 +1,159 @@
+.event-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px; 
+    align-items: start;
+    font-family: 'Times New Roman', Times, serif;
+  }
+  
+  .event-title {
+    grid-column: span 2; 
+    font-size: 2em; 
+    font-weight: bold;
+    text-align: center;
+    /* text-shadow: 2px 2px 4px white;  */
+  }
+
+  .event-list {
+    display: grid;
+    grid-template-columns: 400px 400px;
+    gap: 20px;
+    overflow-y: auto;
+    height: 100vh;
+  }
+  
+  
+  .event {
+    border: 2px solid #fff;
+    border-radius: 20px;
+    padding: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+  }
+  
+  .event-start-time {
+    font-weight: bold;
+    font-size: 1.2em;
+  }
+  
+  .event-details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .title-event-page{
+    font-size: 50px;
+    margin-left: 80px;
+  }
+  
+  .event-details-container{
+    display: grid;
+  }
+
+  .clock-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .start-time-container {
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+  }
+  .invite-more-people {
+    margin-right: 20px;
+    margin-top: 20px;
+    height: 85vh;
+    display: flex;
+    flex-direction: column;
+    /* align-items: center;  */
+    justify-content: center;
+    padding-left: 20px;
+    padding-right: 20px; 
+    background-color: rgb(9, 9, 35);
+
+    border: 2px solid #fff;
+    border-radius: 20px;
+  }
+  
+  .invite-more-people button{
+    background-color: transparent;
+    color: #FFF;
+    border: 2px solid #fff;
+    border-radius: 20px;
+  }
+
+  .user-to-invite{
+    font-size: 25px;
+    font-style: italic;
+  }
+
+  .countdown-container{
+    position: fixed;
+      margin-top: 140px;
+      margin-left: 650px;
+      /* width: 50%; */
+      font-size: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .countdown-container .countdown{
+    margin-top: -15px;
+    font-size: 50px;
+  }
+
+  .event-details-content ul{
+    font-size: 30px;
+  }
+
+  .participants-row {
+    list-style-type: none; 
+    padding: 0; 
+    display: flex; 
+    /* justify-content: center; */
+  }
+  
+  .participant-item {
+    margin-right: 10px;
+  }
+  
+  .participant-item a {
+    text-decoration: none; 
+    color: white;
+    cursor: pointer; 
+  }
+  
+  .participant-item a:hover {
+    text-decoration: underline; 
+  }
+  
+  .rows-with-details{
+    margin-left: 80px;
+    font-size: 50px;
+  }
+
+  .participant-box{
+    border: 2px solid white;
+    /* border-radius: 20px; */
+    padding: 15px;
+    background-color: rgb(9, 9, 35);
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .vertical-white-line {
+    width: 3px; 
+    position: fixed;
+    height: 30%;
+    background-color: white;
+    margin-left: 800px;
+    margin-top: 100px;
+  }
+  

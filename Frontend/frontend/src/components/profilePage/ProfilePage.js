@@ -264,6 +264,8 @@ const redirectToFollowing = (username) => {
                 <button className='button' onClick={handleAddObservationClick}>Add Observation</button>
                 <button className="button" onClick={handleEditClick}>Edit Profile</button>
                 <button className="button" onClick={handleStatisticsClick}>Statistics</button>
+                {/* <button className="button" >All observations</button>
+                <button className="button" >All events</button> */}
                 {/* {showSuccessMessage && (
                   <div style={{ marginTop: '20px', color: 'green' }}>
                     Profile updated successfully!

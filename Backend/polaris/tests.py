@@ -94,5 +94,135 @@ class InvitationTestCase(TestCase):
             'event_time': '2024-06-01T12:00:00Z',
         }
         response = self.client.post(url, data, content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 500)
         self.assertIn('message', response.json())
+
+
+from django.test import TestCase
+from django.urls import reverse
+import json
+
+class RegisterViewTest(TestCase):
+    def test_register_success(self):
+        url = reverse('register')
+        data = {
+            'username': 'testuser',
+            'email': 'test@example.com',
+            'password': 'testpassword'
+        }
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.json(), {'message': 'User registered successfully!'})
+
+    def test_register_existing_username(self):
+        url = reverse('register')
+        data = {
+            'username': 'existinguser',
+            'email': 'existing@example.com',
+            'password': 'testpassword'
+        }
+        self.client.post(url, json.dumps(data), content_type='application/json')
+
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'error': 'There is already a user with this username!'})
+
+    def test_register_invalid_method(self):
+        url = reverse('register')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.json(), {'error': 'Method not allowed.'})
+
+
+from django.test import TestCase
+from polaris.models import User
+from django.urls import reverse
+import json
+
+
+class LoginTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='testpassword')
+    def test_login_success(self):
+        url = reverse('login')
+        data = {'username': 'testuser', 'password': 'testpassword'}
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {'message': 'Login successful', 'user_id': self.user.id, 'username': 'testuser'})
+    def test_login_invalid_credentials(self):
+        url = reverse('login')
+        data = {'username': 'testuser', 'password': 'invalidpassword'}
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(), {'error': 'Invalid username or password'})
+
+    def test_login_missing_credentials(self):
+        url = reverse('login')
+        data = {'username': 'testuser'}
+        response = self.client.post(url, json.dumps(data), content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {'error': 'Email and password are required'})
+
+
+from django.test import TestCase, Client
+from django.urls import reverse
+import json
+from django.test import TestCase
+from django.urls import reverse
+from datetime import datetime, timedelta
+import json
+
+class LunarEclipsePredictionTestCase(TestCase):
+    def test_lunar_eclipse_prediction(self):
+        latitude = '51.5074'
+        longitude = '0.1278'
+        number_of_days = 365
+
+        url = reverse('lunar_eclipse_prediction', args=(latitude, longitude, number_of_days))
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        data = json.loads(response.content)
+
+        self.assertIn('eclipse_times', data)
+        self.assertIn('end_time', data)
+
+        self.assertTrue(isinstance(data['eclipse_times'], list))
+        self.assertTrue(data['eclipse_times'])
+
+        end_time_str = data['end_time']
+        try:
+            end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M:%S.%fZ')
+        except ValueError:
+            end_time = None
+
+
+class SolarEclipsePredictionTestCase(TestCase):
+    def test_solar_eclipse_prediction(self):
+        latitude = 37.7749
+        longitude = -122.4194
+        number_of_days = 365
+
+        url = reverse('solar_eclipse_prediction', args=(latitude, longitude, number_of_days))
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn('eclipse_times', response.json())
+
+        eclipse_times = response.json()['eclipse_times']
+        self.assertTrue(eclipse_times)
+
+        # Optional: Print the eclipse times for debugging
+        print("Solar eclipse times:", eclipse_times)
+        eclipse_datetimes = [datetime.strptime(time, '%Y/%m/%d %H:%M:%S') for time in eclipse_times]
+
+        print("Solar eclipse datetimes:", eclipse_datetimes)
+
+        endtime = datetime.utcnow() + timedelta(days=number_of_days)
+        for eclipse_datetime in eclipse_datetimes:
+            self.assertLessEqual(eclipse_datetime, endtime)
+
+

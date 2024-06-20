@@ -1,0 +1,44 @@
+.notification-page {
+  max-width: 600px;
+  padding: 20px;
+  background-image: url("1315108.jpeg");
+  background-size: cover;
+  position: relative;
+  height: 100vh; 
+}
+
+.notification-page h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.notification-box {
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  color: rgb(163, 168, 236);
+}
+
+.notification-icon {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
+.button-container {
+  margin-top: 10px;
+}
+
+.button-container button {
+  margin-bottom: 2px;
+  background-color: rgb(163, 168, 236);
+  border: 2px solid white;
+}
+
+.notif-descr{
+  color: black;
+}

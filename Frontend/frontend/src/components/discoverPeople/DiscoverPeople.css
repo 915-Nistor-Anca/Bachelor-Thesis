@@ -1,0 +1,73 @@
+.discover-people-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    height: 100vh; 
+    box-sizing: border-box;
+}
+
+.discover-people {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.left-column, .right-column {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow-y: auto; 
+    max-height: 90vh;
+    width: 15%;
+    background-color: rgb(9, 9, 35);
+}
+
+.user-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    width: 100%; 
+    background-color: rgb(45, 45, 91);;
+}
+
+.user-card p {
+    margin: 5px 0;
+    text-align: center;
+}
+
+.user-card .username {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.user-card .email{
+    font-size: 0.8em;
+}
+
+.user-card button {
+    padding: 5px 10px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto; 
+    background-color: white;
+}
+
+
+.middle-column {
+    flex: 1;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow-y: auto; 
+    max-height: 90vh;
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
