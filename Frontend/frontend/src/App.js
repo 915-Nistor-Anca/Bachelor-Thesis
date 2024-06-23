@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Layout from './components/Layout';
+import ViewerLayout from './components/ViewerLayout';
 import FirstPage from './components/firstPage/FirstPage';
 import Planets from './components/mainPage/PlanetsPage';
 import Login from './components/loginPage/LoginPage';
@@ -25,6 +26,12 @@ import NotificationsPage from './components/notifications/NotificationsPage';
 import PlanetEncyclopedia from './components/mainPage/PlanetEncyclopedia';
 import EncyclopediaPage from './components/mainPage/EncyclopediaPage';
 import DiscoverPeople from './components/discoverPeople/DiscoverPeople';
+import ViewerMainPage from './components/ViewerMainPage/ViewerMainPage';
+import FindBestTimes from './components/ViewerMainPage/FindBestTimes';
+import StarComponent from './components/ViewerMainPage/StarComponent';
+import ViewerEncyclopediaPage from './components/mainPage/ViewerEncyclopediaPage';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 function App() {
   return (
@@ -41,6 +48,7 @@ function App() {
           <Route path="/mapcomponent" element={<Layout><MapComponent /></Layout>} />
           <Route path="/updateobservationpage" element={<Layout><UpdateObservationPage /></Layout>} />
           <Route path="/starpage" element={<Layout><StarPage /></Layout>} />
+          <Route path="/viewerstarpage" element={<StarPage />} />
           <Route path="/profile" element={<Layout><ProfilePage /></Layout>} />
           <Route path="/following/:username" element={<Layout><FollowingPage /></Layout>} />
           <Route path="/followers/:username" element={<Layout><FollowersPage /></Layout>} />
@@ -54,8 +62,15 @@ function App() {
           <Route path="/notifications" element={<Layout><NotificationsPage/></Layout>}/>
           <Route path="/planets" element={<Layout><Planets/></Layout>}/>
           <Route path="/planetencyclopedia" element={<Layout><PlanetEncyclopedia/></Layout>}/>
+          <Route path="/viewerplanetencyclopedia" element={<PlanetEncyclopedia/>}/>
           <Route path="/encyclopedia" element={<Layout><EncyclopediaPage/></Layout>}/>
+          <Route path="/viewerencyclopedia" element={<ViewerLayout><ViewerEncyclopediaPage/></ViewerLayout>}/>
           <Route path="/discoverpeople" element={<Layout><DiscoverPeople/></Layout>}/>
+          <Route path="/viewerpage" element={<ViewerLayout><ViewerMainPage/></ViewerLayout>}/>
+          <Route path="/findbesttimes" element={<ViewerLayout><FindBestTimes/></ViewerLayout>}/>
+          <Route path="/starcomponent" element={<StarComponent/>}/>
+          <Route path="/forgot-password" element={<ForgotPassword/>}/>
+          <Route path="/reset-password/:uid/:token" element={<ResetPassword/>} />
         </Routes>
       </Router>
     </React.Fragment>

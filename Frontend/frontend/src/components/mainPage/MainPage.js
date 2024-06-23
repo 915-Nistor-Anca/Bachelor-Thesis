@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import React, { useEffect } from 'react';
 import Planets from './PlanetsPage';
 import "./MainPage.css";
@@ -30,26 +30,26 @@ function MainPage() {
       <div className='content'>
         <h1 className='title-main-page'>Welcome to Polaris!</h1>
         <div className='section1'>
-          <h2>
-            <Link to="/encyclopedia">📖Encyclopedia</Link>
+          <h2 onClick={() => navigate('/encyclopedia')} style={{ cursor: 'pointer' }}>
+            📖Encyclopedia
           </h2>
           <p>Find information about stars and planets.</p>
         </div>
         <div className='section2'>
-          <h2>
-            <Link to="/events">🔭Events</Link>
+          <h2 onClick={() => navigate('/events')} style={{ cursor: 'pointer' }}>
+            🔭Events
           </h2>
           <p>See your events as well as the ones you were invited to.</p>
         </div>
         <div className='section3'>
-          <h2>
-            <Link to="/addobservationspage">🌠Add Observation</Link>
+          <h2 onClick={() => navigate('/addobservationspage')} style={{ cursor: 'pointer' }}>
+            🌠Add Observation
           </h2>
           <p>Add your astronomical observation.</p>
         </div>
         <div className='section4'>
-          <h2>
-            <Link to="/discoverpeople">👥Discover New People</Link>
+          <h2 onClick={() => navigate('/discoverpeople')} style={{ cursor: 'pointer' }}>
+            👥Discover New People
           </h2>
           <p>Discover new people with similar interests.</p>
         </div>

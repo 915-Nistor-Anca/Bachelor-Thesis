@@ -222,7 +222,7 @@ function PlanEventPage() {
 
 const csrfToken = getCsrfToken();
 
-const sendInvitationEmail = async (email, event) => {
+const sendInvitationEmail = async (email, id, event) => {
   try {
     const response = await fetch('http://127.0.0.1:8000/polaris/send-invitation/', {
       method: 'POST',
@@ -236,6 +236,8 @@ const sendInvitationEmail = async (email, event) => {
           title: event.title,
           description: event.description,
           start_time: event.start_time,
+          sender_user_id: getUserIdFromCookie(),
+          receiver_user_id: id
         },
       }),
     });
@@ -560,7 +562,7 @@ const redirectToEvent = () => {
             <p2>{userData.username}</p2>
           </div>
           <p2>{userData.email}</p2>
-          <button onClick={() => sendInvitationEmail(userData.email, selectedEvent)}>Invite</button>
+          <button onClick={() => sendInvitationEmail(userData.email, id, selectedEvent)}>Invite</button>
         </div>
       ))} 
       </div>

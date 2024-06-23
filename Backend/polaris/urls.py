@@ -50,9 +50,11 @@ urlpatterns = [
     path('events-user/<int:organizer>/', views.EventList.as_view(), name='list-of-events-of-a-user'),
     path('equipment/<str:observation_type>/', views.get_equipment_list, name='equipment_list'),
     path('notifications/', views.NotificationList.as_view(), name='list-of-notifications'),
-    path('notifications/<int:pk>', views.NotificationDetail.as_view(), name='notification-detail'),
+    path('notifications/<int:pk>/', views.NotificationDetail.as_view(), name='notification-detail'),
     path('notifications-user/<int:user_id>/', views.NotificationUserList.as_view(),name='list-of-notifications-of-a-user'),
     path('planets/', views.PlanetList.as_view(), name='list-of-planets'),
     path('constellations/', views.ConstellationList.as_view(), name='list-of-constellations'),
+    path('forgot-password/', views.send_forgot_password, name='forgot-password'),
+    path('reset-password/', views.reset_password, name='reset_password'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

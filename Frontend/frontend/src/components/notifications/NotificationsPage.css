@@ -4,7 +4,15 @@
   background-image: url("1315108.jpeg");
   background-size: cover;
   position: relative;
-  height: 100vh; 
+  overflow-y: auto;
+  height: 100vh;
+  border: 2px solid white;
+}
+
+.notification-container {
+  max-height: 400px;
+  overflow-y: auto; 
+  margin-bottom: 20px;
 }
 
 .notification-page h2 {
@@ -39,6 +47,24 @@
   border: 2px solid white;
 }
 
-.notif-descr{
+.button-ok-container button {
+  margin-bottom: 2px;
+  background-color: rgb(163, 168, 236);
+  border: 2px solid white;
+}
+
+.notif-descr {
   color: black;
+}
+
+.printed-event {
+  position: fixed;
+  top: 100px;
+  right: 100px; 
+  background-color: rgb(13, 11, 35);
+  padding: 150px;
+  border-radius: 8px;
+  z-index: 1000;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  font-size: 20px;
 }

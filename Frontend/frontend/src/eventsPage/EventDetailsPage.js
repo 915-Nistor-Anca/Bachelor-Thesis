@@ -281,6 +281,11 @@ function EventDetailsPage() {
             <p>{event.location_latitude}; {event.location_longitude}</p>
           </div>
 
+          {/* <div className="start-time-container">
+            <img src={locationIcon} alt="Organizer" className="clock-icon" /> 
+            <p>{event.organizer}</p>
+          </div> */}
+
           <div className="start-time-container">
             <img src={telescopeIcon} alt="Equipment icon" className="clock-icon" /> 
             <p><strong>Recommended equipment:</strong></p>

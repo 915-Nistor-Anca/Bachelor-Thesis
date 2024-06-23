@@ -89,7 +89,7 @@ function FirstPage() {
   }
   
   function continueWithoutAccount() {
-    
+    navigate('/viewerpage');
   }
 
   return (

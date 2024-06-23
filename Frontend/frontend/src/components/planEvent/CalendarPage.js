@@ -74,8 +74,8 @@ function CalendarPage() {
               <li key={obs.id}>
                 <strong>{obs.targets}</strong> at {new Date(obs.observation_time).toLocaleTimeString()}<br />
                 Location: {obs.location}<br />
-                Sky Conditions: {obs.sky_conditions}<br />
-                Equipment: {obs.equipment.join(', ')}<br />
+                {/* Sky Conditions: {obs.sky_conditions}<br /> */}
+                {/* Equipment: {obs.equipment.join(', ')}<br /> */}
                 Notes: {obs.personal_observations}
               </li>
             ))}

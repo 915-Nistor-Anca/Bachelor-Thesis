@@ -1,0 +1,47 @@
+.viewer-main-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    /* background-color: #e0f7fa;  */
+    color: #241242;
+    font-family: 'Times New Roman', Times, serif;
+    background-image: url("wallpaper.jpg");
+  }
+  
+  .viewer-content {
+    text-align: center;
+    background-color: #d1c4e9; 
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .viewer-title {
+    font-size: 3em;
+    margin-bottom: 20px;
+    color: #241242;
+  }
+  
+  .viewer-section {
+    margin: 20px 0;
+  }
+  
+  .viewer-encyclopedia-section h2,
+  .viewer-events-section h2 {
+    font-size: 2em;
+    color: #241242;
+    transition: color 0.3s;
+  }
+  
+  .viewer-encyclopedia-section h2:hover,
+  .viewer-events-section h2:hover {
+    color: #7e57c2; 
+  }
+  
+  .viewer-encyclopedia-section p,
+  .viewer-events-section p {
+    font-size: 1.2em;
+    color: white;
+  }
+  

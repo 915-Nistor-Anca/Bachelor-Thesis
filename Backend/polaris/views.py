@@ -1,7 +1,10 @@
 from datetime import datetime
 
+from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from rest_framework import generics
 from skyfield.api import load, Topos
 from skyfield.almanac import find_discrete, risings_and_settings, oppositions_conjunctions, moon_phases
@@ -668,7 +671,7 @@ def get_lunar_solar_eclipse(request, latitude, longitude, number_of_days, prefer
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
-def get_lunar_eclipses_events(request, latitude, longitude, number_of_days, preferred_hour):
+def  get_lunar_eclipses_events(request, latitude, longitude, number_of_days, preferred_hour):
     try:
         lunar_response = lunar_eclipse_prediction(request, latitude, longitude, number_of_days)
         lunar_data = json.loads(lunar_response.content)
@@ -936,6 +939,55 @@ def send_invitation(request):
             print(to_email, event_details)
             send_invitation_email(to_email, event_details)
             return JsonResponse({'status': 'success', 'message': 'Invitation sent successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def send_forgot_password_email(to_email, reset_link):
+    subject = 'Reset Your Password'
+    message = f"Hi there, click the link below to reset your password:\n{reset_link}\nCheers,\nThe Polaris Team 🌠"
+
+    send_email(to_email, subject, message)
+
+@csrf_exempt
+def send_forgot_password(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            to_email = data.get('email')
+            user = User.objects.get(email=to_email)
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            reset_link = f"http://127.0.0.1:3000/reset-password/{uid}/{token}/"
+            send_forgot_password_email(to_email, reset_link)
+            return JsonResponse({'status': 'success', 'message': 'Email sent successfully.'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+
+
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.hashers import make_password
+
+
+@csrf_exempt
+def reset_password(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            uid = urlsafe_base64_decode(data.get('uid')).decode()
+            token = data.get('token')
+            password = data.get('password')
+
+            user = User.objects.get(id=uid)
+            if default_token_generator.check_token(user, token):
+                user.password = make_password(password)
+                user.save()
+                return JsonResponse({'status': 'success', 'message': 'Password reset successfully.'})
+            else:
+                return JsonResponse({'status': 'error', 'message': 'Invalid token.'}, status=400)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)

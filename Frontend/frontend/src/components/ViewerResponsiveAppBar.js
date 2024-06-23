@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -17,44 +17,13 @@ import Badge from '@mui/material/Badge';
 import { Link, useNavigate } from 'react-router-dom';
 import profileImage from './astronomer_profile.jpeg';
 
-const pages = ['Feed', 'Plan Event'];
-const settings = ['Profile', 'Logout'];
+const pages = ['Login'];
+const settings = [];
 
-function ResponsiveAppBar() {
+function ViewerResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate();
-
-
-  const [notifications, setNotifications] = useState([]);
-  const [notificationCount, setNotificationCount] = useState(0);
-
-  const getUserIdFromCookie = () => {
-    const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
-    const userCookie = cookies.find(cookie => cookie[0] === 'user_id');
-    return userCookie ? userCookie[1] : null;
-  };
-
-  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const userId = getUserIdFromCookie();
-        const response = await fetch(`http://127.0.0.1:8000/polaris/notifications-user/${userId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch notifications');
-        }
-        const notificationsData = await response.json();
-        console.log(notificationsData);
-        const unreadNotifications = notificationsData.filter(notification => notification.read === 0);
-        setNotifications(unreadNotifications);
-        setNotificationCount(unreadNotifications.length);
-      } catch (error) {
-        console.error('Error fetching notifications:', error);
-      }
-    };
-
-    fetchNotifications();
-  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -73,16 +42,10 @@ function ResponsiveAppBar() {
   };
 
   const handleMenuItemClick = (setting) => {
-    if (setting === 'Profile') {
-      navigate('/profile');
-    } else if (setting === 'Logout') {
-      navigate('/home');
+    if (setting === 'Login') {
+      navigate('/login');
     }
     handleCloseUserMenu();
-  };
-
-  const handleNotificationsClick = () => {
-    navigate('/notifications');
   };
 
   return (
@@ -99,7 +62,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component={Link}
-            to="/mainuserpage"
+            to="/viewerpage"
             sx={{
               mr: 2,
               display: { xs: 'none', md: 'flex' },
@@ -184,18 +147,6 @@ function ResponsiveAppBar() {
           </Box>
 
           <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
-            <Tooltip title="Notifications">
-              <IconButton sx={{ p: 0, marginRight: '-216px' }} onClick={handleNotificationsClick}>
-                <Badge badgeContent={notificationCount} color="error">
-                  <NotificationsIcon style={{ color: 'white' }} />
-                </Badge>
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Profile">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="User Profile" src={profileImage} />
-              </IconButton>
-            </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -225,4 +176,4 @@ function ResponsiveAppBar() {
   );
 }
 
-export default ResponsiveAppBar;
+export default ViewerResponsiveAppBar;
