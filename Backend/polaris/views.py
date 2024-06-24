@@ -10,10 +10,10 @@ from skyfield.api import load, Topos
 from skyfield.almanac import find_discrete, risings_and_settings, oppositions_conjunctions, moon_phases
 from datetime import timedelta
 from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event, Notification, Planet, \
-    Constellation
+    Constellation, Message, Chat
 from polaris.serializers import UserSerializer, ObservationSerializer, EquipmentSerializer, SkyConditionSerializer, \
     StarSerializer, UserProfileSerializer, EventSerializer, ImageSerializer, NotificationSerializer, PlanetSerializer, \
-    ConstellationSerializer
+    ConstellationSerializer, MessageSerializer, ChatSerializer
 from django.contrib.auth import authenticate
 
 from django.http import JsonResponse
@@ -1029,3 +1029,20 @@ class PlanetList(generics.ListCreateAPIView):
 class ConstellationList(generics.ListCreateAPIView):
     queryset = Constellation.objects.all()
     serializer_class = ConstellationSerializer
+
+class MessageList(generics.ListCreateAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+
+class ChatList(generics.ListCreateAPIView):
+    queryset = Chat.objects.all()
+    serializer_class = ChatSerializer
+
+class MessageDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+class ChatDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Chat.objects.all()
+    serializer_class = ChatSerializer

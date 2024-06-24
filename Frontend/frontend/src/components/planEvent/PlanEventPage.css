@@ -481,7 +481,7 @@
     
     .calendar-part {
       position: fixed;
-      margin-top: -550px;
+      margin-top: -500px;
       margin-left: 650px;
       width: 50%;
       background-color: rgba(255, 192, 203, 0.3);

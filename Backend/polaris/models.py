@@ -116,10 +116,23 @@ class Planet(models.Model):
 
 
 class Chat(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    event = models.OneToOneField(Event, on_delete=models.CASCADE)
+
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     content = models.TextField(blank=True, null=True)
 
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+
+@receiver(post_save, sender=Event)
+def create_chat_on_event_creation(sender, instance, created, **kwargs):
+    if created:
+        Chat.objects.create(event=instance)
+
+
+post_save.connect(create_chat_on_event_creation, sender=Event)

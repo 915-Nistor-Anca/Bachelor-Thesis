@@ -32,6 +32,7 @@ import StarComponent from './components/ViewerMainPage/StarComponent';
 import ViewerEncyclopediaPage from './components/mainPage/ViewerEncyclopediaPage';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
+import GroupChat from './components/GroupChat';
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
           <Route path="/starcomponent" element={<StarComponent/>}/>
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path="/reset-password/:uid/:token" element={<ResetPassword/>} />
+          <Route path="/groupchat/:eventId" element={<Layout><GroupChat /></Layout>} />
         </Routes>
       </Router>
     </React.Fragment>

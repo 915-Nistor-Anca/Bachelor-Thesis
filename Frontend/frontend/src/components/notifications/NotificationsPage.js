@@ -49,6 +49,28 @@ function NotificationsPage() {
     }
   };
 
+  const fetchUsername = async (userId) => {
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/polaris/users/${userId}/`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch username');
+      }
+  
+      const data = await response.json();
+      return data.username;
+    } catch (error) {
+      console.error('Error fetching username:', error);
+      return null;
+    }
+  };
+  
+
   const handleResponse = async (notification, action) => {
     if (!notification.purpose.includes(';')) {
       console.error('Invalid notification purpose format');
@@ -56,8 +78,13 @@ function NotificationsPage() {
     }
 
     const eventId = notification.purpose.split(';')[1];
-    const username = getUserIdFromCookie();
-    const description = `${username} ${action} your invitation`;
+    const userId = getUserIdFromCookie();
+    const username = await fetchUsername(userId);
+    if (!username) {
+      console.error('Username not found');
+      return;
+    }
+  const description = `Your friend, ${username}, ${action} your invitation to the event.`;
     const purpose = `confirmation;${eventId}`;
 
     try {
@@ -169,9 +196,14 @@ function NotificationsPage() {
     const minutesPassed = Math.floor((currentDate - createdDate) / (1000 * 60));
     return minutesPassed;
   };
+  const unreadNotifications = notifications
+  .filter(notification => notification.read === 0)
+  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-  const unreadNotifications = notifications.filter(notification => notification.read === 0);
-  const readNotifications = notifications.filter(notification => notification.read === 1);
+const readNotifications = notifications
+  .filter(notification => notification.read === 1)
+  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
 
   const handleNotificationClick = (notification) => {
     console.log("handle notif click");

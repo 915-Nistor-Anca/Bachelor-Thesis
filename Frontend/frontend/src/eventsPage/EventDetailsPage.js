@@ -7,6 +7,8 @@ import locationIcon from './location.png';
 import participantsIcon from './participants.png';
 import telescopeIcon from './telescope.png';
 import chatIcon from './chatIcon.png';
+import man from './man.png';
+
 function EventDetailsPage() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
@@ -21,6 +23,7 @@ function EventDetailsPage() {
   const [equipmentData, setEquipmentData] = useState([]);
   const [observationUsernames, setObservationUsernames] = useState({});
   const [images, setImages] = useState([]);
+  const [organizerUsername, setOrganizerUsername] = useState('');
 
   const getUserIdFromCookie = () => {
     const cookies = document.cookie.split(';').map(cookie => cookie.trim().split('='));
@@ -58,6 +61,24 @@ function EventDetailsPage() {
         const equipmentData = await equipmentResponse.json();
         console.log('Equipment:', equipmentData.equipment.map(e => e.name));
         setEquipmentData(equipmentData);
+
+          console.log(data);
+          console.log(data.organizer);
+          const responseuser = await fetch(`http://127.0.0.1:8000/polaris/users/${data.organizer}/`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          if (!responseuser.ok) {
+            throw new Error('Failed to fetch username');
+          }
+      
+          const datauser = await responseuser.json();
+          setOrganizerUsername(datauser.username);
+          console.log("organizer username:",organizerUsername);
+        
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -111,7 +132,6 @@ function EventDetailsPage() {
           return { userId: obs.user, username: userData.username };
         }));
 
-        // Create a map of userId to username
         const usernamesMap = Object.fromEntries(observationUsernamesData.map(({ userId, username }) => [userId, username]));
         setObservationUsernames(usernamesMap);
       } catch (error) {
@@ -261,6 +281,9 @@ function EventDetailsPage() {
     ([id, userData]) => !event.participants.includes(parseInt(id))
   );
 
+  
+
+
   return (
     <div className="event-details-container">
       <div className="event-details-content">
@@ -281,10 +304,10 @@ function EventDetailsPage() {
             <p>{event.location_latitude}; {event.location_longitude}</p>
           </div>
 
-          {/* <div className="start-time-container">
-            <img src={locationIcon} alt="Organizer" className="clock-icon" /> 
-            <p>{event.organizer}</p>
-          </div> */}
+          <div className="start-time-container">
+          <img src={man} alt="Organizer" className="clock-icon" /> 
+          <p><strong>Organizer:</strong> {organizerUsername}</p>
+        </div>
 
           <div className="start-time-container">
             <img src={telescopeIcon} alt="Equipment icon" className="clock-icon" /> 
@@ -296,10 +319,10 @@ function EventDetailsPage() {
             )}
           </div>
 
-          <div className="start-time-container">
-            <img src={chatIcon} alt="Chat icon" className="clock-icon" /> 
-            <p><strong>Go to the event group chat</strong></p>
-          </div>
+          <div className="start-time-container" onClick={() => navigate(`/groupchat/${eventId}`)} style={{ cursor: 'pointer' }}>
+          <img src={chatIcon} alt="Chat icon" className="clock-icon" /> 
+          <p><strong>Go to the event group chat</strong></p>
+        </div>
 
           <div className="start-time-container">
             <img src={participantsIcon} alt="Participants icon" className="clock-icon" />

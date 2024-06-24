@@ -8,7 +8,11 @@
 
 .event-details-content {
   width: 50%;
+  margin-top: 0px;
+  overflow-y: auto; 
+  max-height: calc(100vh - 100px); 
 }
+
 
 .countdown-container {
   width: 50%;

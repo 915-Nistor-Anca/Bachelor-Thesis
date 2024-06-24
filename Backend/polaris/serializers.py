@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from polaris.models import User, Observation, Equipment, SkyCondition, Star, UserProfile, Event, Image, Notification, \
-    Constellation, Planet
+    Constellation, Planet, Message, Chat
 
 
 class PlanetSerializer(serializers.ModelSerializer):
@@ -64,3 +64,12 @@ class EventSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'organizer', 'participants', 'location_latitude', 'location_longitude',
                   'start_time', 'created_at']
 
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+class ChatSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Chat
+        fields = '__all__'

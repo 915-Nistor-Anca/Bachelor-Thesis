@@ -21,30 +21,37 @@ function FindBestTimes() {
   const fetchObservationData = async () => {
     setLoading(true);
     try {
-      let planet = "Mercury";
-      let months = 12;
-      let url1 = `http://127.0.0.1:8000/polaris/get-best-observation-times/${location.latitude}/${location.longitude}/${planet}/${months * 30}/`;
-      let url2 = `http://127.0.0.1:8000/polaris/solar-eclipse-prediction/${location.latitude}/${location.longitude}/${months * 30}/`;
-      let url3 = `http://127.0.0.1:8000/polaris/lunar-eclipse-prediction/${location.latitude}/${location.longitude}/${months * 30}/`;
+      const planet = "Mercury";
+      const months = 6;
+      const url1 = `http://127.0.0.1:8000/polaris/get-best-observation-times/${location.latitude}/${location.longitude}/${planet}/${months * 30}/`;
+      const url2 = `http://127.0.0.1:8000/polaris/solar-eclipse-prediction/${location.latitude}/${location.longitude}/${months * 30}/`;
+      const url3 = `http://127.0.0.1:8000/polaris/lunar-eclipse-prediction/${location.latitude}/${location.longitude}/${months * 30}/`;
 
-      let response = await fetch(url1);
-      let data = await response.json();
-      setObservations1(data.observation_times);
+      const response1 = await fetch(url1);
+      const data1 = await response1.json();
+      setObservations1(data1.observation_times);
 
-      response = await fetch(url2);
-      data = await response.json();
-      setObservations2(data.eclipse_times);
+      const response2 = await fetch(url2);
+      const data2 = await response2.json();
+      setObservations2(data2.eclipse_times);
 
-      response = await fetch(url3);
-      data = await response.json();
-      setObservations3(data.eclipse_times);
+      const response3 = await fetch(url3);
+      const data3 = await response3.json();
+      setObservations3(data3.eclipse_times);
 
       setDataFetched(true);
     } catch (error) {
       console.error('Error fetching observation data:', error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  useEffect(() => {
+    console.log("Observations1: ", observations1);
+    console.log("Observations2: ", observations2);
+    console.log("Observations3: ", observations3);
+  }, [observations1, observations2, observations3]);
 
   return (
     <div>
@@ -66,53 +73,55 @@ function FindBestTimes() {
             <input type="text" value={locationString} readOnly />
           </label>
           <button onClick={fetchObservationData} className="find-time-button-map">Choose selected location</button>
+          {loading && <p>Loading...</p>}
         </div>
       ) : (
         <div>
-            <h>For the given location, the best observation times are:</h>
-        <div className="observations-container">
-          {loading && <p>Loading...</p>}
-          {!loading && (
-            <>
-              <div className="observation-column">
-                <h2>Best Observation Times</h2>
-                {observations1.length > 0 ? (
-                  <ul>
-                    {observations1.map((observation, index) => (
-                      <li key={index}>{observation}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No observation times available.</p>
-                )}
-              </div>
-              <div className="observation-column">
-                <h2>Solar Eclipse Times</h2>
-                {observations2.length > 0 ? (
-                  <ul>
-                    {observations2.map((eclipse, index) => (
-                      <li key={index}>{eclipse}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No solar eclipse times available.</p>
-                )}
-              </div>
-              <div className="observation-column">
-                <h2>Lunar Eclipse Times</h2>
-                {observations3.length > 0 ? (
-                  <ul>
-                    {observations3.map((eclipse, index) => (
-                      <li key={index}>{eclipse}</li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No lunar eclipse times available.</p>
-                )}
-              </div>
-            </>
-          )}
-        </div>
+          <h2>For the given location, the best observation times are:</h2>
+          <div className="observations-container">
+            
+            {!loading && (
+              <>
+                <div className="observation-column">
+                  <h3>Best Observation Times</h3>
+                  {observations1.length > 0 ? (
+                    <ul>
+                      {observations1.map((observation, index) => (
+                        <li key={index}>{observation}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No observation times available.</p>
+                  )}
+                </div>
+                <div className="observation-column">
+                  <h3>Solar Eclipse Times</h3>
+                  {observations2.length > 0 ? (
+                    <ul>
+                      {observations2.map((eclipse, index) => (
+                        <li key={index}>{eclipse}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No solar eclipse times available.</p>
+                  )}
+                </div>
+                <div className="observation-column">
+                  <h3>Lunar Eclipse Times</h3>
+                  {observations3.length > 0 ? (
+                    <ul>
+                      {observations3.map((eclipse, index) => (
+                        <li key={index}>{eclipse}</li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No lunar eclipse times available.</p>
+                  )}
+                </div>
+              </>
+            )}
+            {loading && <p>Loading...</p>}
+          </div>
         </div>
       )}
     </div>

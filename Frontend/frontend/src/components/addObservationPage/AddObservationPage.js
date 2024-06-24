@@ -10,6 +10,8 @@ function AddObservationPage() {
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [equipmentOptions, setEquipmentOptions] = useState([]);
   const [skyConditionsOptions, setSkyConditionsOptions] = useState([]);
+  const [eventOptions, setEventOptions] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState('');
 
   useEffect(() => {
     const fetchEquipmentOptions = async () => {
@@ -62,6 +64,32 @@ function AddObservationPage() {
     };
 
     fetchSkyConditions();
+  }, []);
+
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/polaris/events/', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch events');
+        }
+
+        const data = await response.json();
+        const filteredEvents = data.filter(event => new Date(event.start_time) < new Date());
+        setEventOptions(filteredEvents);
+      } catch (error) {
+        console.error('Error fetching events:', error);
+      }
+    };
+
+    fetchEvents();
   }, []);
   
 
@@ -127,7 +155,8 @@ function AddObservationPage() {
         equipment: equipmentIds,
         personal_observations,
         location: locationString,
-        privacy: observationPrivacy
+        privacy: observationPrivacy,
+        event: selectedEvent
       };
   
       const response = await fetch('http://127.0.0.1:8000/polaris/observations/', {
@@ -284,11 +313,11 @@ function AddObservationPage() {
           <div className="form-group">
             <label className="label-add-page">
               Event:
-              <select value={selectedSkyCondition} onChange={handleSkyConditionChange} className="input-add-page">
+              <select value={selectedEvent} onChange={(e) => setSelectedEvent(e.target.value)} className="input-add-page">
                 <option value="">Select Event</option>
-                {/* {skyConditionsOptions.map((condition, index) => (
-                  <option key={index} value={condition.id}>{condition}</option>
-                ))} */}
+                {eventOptions.map((event, index) => (
+                  <option key={index} value={event.id}>{event.title}</option>
+                ))}
               </select>
             </label>
           </div>

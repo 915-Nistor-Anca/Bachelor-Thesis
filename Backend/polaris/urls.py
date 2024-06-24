@@ -56,5 +56,9 @@ urlpatterns = [
     path('constellations/', views.ConstellationList.as_view(), name='list-of-constellations'),
     path('forgot-password/', views.send_forgot_password, name='forgot-password'),
     path('reset-password/', views.reset_password, name='reset_password'),
+    path('chats/', views.ChatList.as_view(), name='list-of-chats'),
+    path('messages/', views.MessageList.as_view(), name='list-of-messages'),
+    path('chats/<int:pk>/', views.ChatDetail.as_view(), name='chat-detail'),
+    path('messages/<int:pk>/', views.MessageDetail.as_view(), name='message-detail'),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

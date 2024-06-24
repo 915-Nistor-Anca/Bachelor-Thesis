@@ -233,6 +233,7 @@ const sendInvitationEmail = async (email, id, event) => {
       body: JSON.stringify({
         email: email,
         event_details: {
+          id: createdEventId,
           title: event.title,
           description: event.description,
           start_time: event.start_time,
@@ -241,7 +242,6 @@ const sendInvitationEmail = async (email, id, event) => {
         },
       }),
     });
-
     if (response.ok) {
       const result = await response.json();
       alert(result.message);
