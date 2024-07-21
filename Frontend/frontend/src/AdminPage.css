@@ -1,0 +1,93 @@
+.admin-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-h2, .admin-h3 {
+    color: #6b438a;
+  }
+  
+  .admin-table-container {
+    overflow-y: auto;
+    flex-grow: 1;
+  }
+  
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+  
+  .admin-table, .admin-th, .admin-td {
+    border: 1px solid #ddd;
+  }
+  
+  .admin-th, .admin-td {
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .admin-th {
+    background-color: #6b438a;
+    color: white;
+  }
+  
+  .admin-form {
+    margin-bottom: 20px;
+  }
+  
+  .admin-form input {
+    margin-right: 10px;
+    padding: 8px;
+    font-size: 14px;
+  }
+  
+  .admin-form button {
+    padding: 8px 12px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  
+  /* Button styles */
+  .admin-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-right: 5px;
+  }
+  
+  .admin-button-save {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+  }
+  
+  .admin-button-edit {
+    background-color: #3146bf;
+    color: white;
+    border: none;
+  }
+  
+  .admin-button-delete {
+    background-color: #8a5287;
+    color: white;
+    border: none;
+  }
+  
+  .admin-link {
+    display: inline-block;
+    margin-top: 20px;
+    color: #3553b4;
+    text-decoration: none;
+  }
+  
+  .admin-link:hover {
+    text-decoration: underline;
+  }
+  

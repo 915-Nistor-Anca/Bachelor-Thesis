@@ -33,6 +33,7 @@ import ViewerEncyclopediaPage from './components/mainPage/ViewerEncyclopediaPage
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
 import GroupChat from './components/GroupChat';
+import AdminPage from './AdminPage';
 
 function App() {
   return (
@@ -73,6 +74,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword/>}/>
           <Route path="/reset-password/:uid/:token" element={<ResetPassword/>} />
           <Route path="/groupchat/:eventId" element={<Layout><GroupChat /></Layout>} />
+          <Route path="/adminpage" element={<AdminPage/>}/>
         </Routes>
       </Router>
     </React.Fragment>

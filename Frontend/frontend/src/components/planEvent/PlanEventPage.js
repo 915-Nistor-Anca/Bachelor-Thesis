@@ -17,7 +17,8 @@ function PlanEventPage() {
   const [selectedTargets, setSelectedTargets] = useState({
     planetObservation: false,
     solarEclipse: false,
-    lunarEclipse: false
+    lunarEclipse: false,
+    starObservation: false
   });
   const [selectedPlanets, setSelectedPlanets] = useState([]);
   const [months, setMonths] = useState(1);
@@ -374,8 +375,8 @@ const redirectToEvent = () => {
             <label className='checkbox'>
               <input
                 type="checkbox"
-                checked={selectedTargets.lunarEclipse}
-                onChange={(e) => setSelectedTargets({ ...selectedTargets, lunarEclipse: e.target.checked })}
+                checked={selectedTargets.starObservation}
+                onChange={(e) => setSelectedTargets({ ...selectedTargets, starObservation: e.target.checked })}
               />
               Simple star observation
             </label>

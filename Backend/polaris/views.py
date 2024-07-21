@@ -317,21 +317,72 @@ def get_best_observation_times(request, latitude, longitude, planet_name, number
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+def get_best_star_observation_times(request, latitude, longitude, number_of_days):
+    try:
+        if float(latitude) >= 0:
+            hemisphere = " N"
+        else:
+            hemisphere = " S"
+        observer_lat = latitude + hemisphere
+
+        if float(longitude) >= 0:
+            hemisphere = " E"
+        else:
+            hemisphere = " W"
+        observer_lon = longitude + hemisphere
+
+        eph = load('de421.bsp')
+        observer_location = Topos(observer_lat, observer_lon)
+        ts = load.timescale()
+        t0 = ts.now()
+        t1 = ts.utc(t0.utc_datetime() + timedelta(days=number_of_days))
+
+        moon = eph['moon']
+        f = risings_and_settings(eph, moon, observer_location)
+        moon_rise_set_times = find_discrete(t0, t1, f)
+
+        phase_times, phases = find_discrete(t0, t1, moon_phases(eph))
+
+        def is_good_observation_time(time):
+            if any(abs((time.utc_datetime() - phase_time.utc_datetime()).days) < 3 and phase > 0.75 for
+                   phase_time, phase in
+                   zip(phase_times, phases)):
+                return False
+            return True
+
+        sunset_sunrise_times = []
+        sun = eph['sun']
+        f = risings_and_settings(eph, sun, observer_location)
+        sunset_sunrise_times.extend(find_discrete(t0, t1, f))
+
+        good_times = []
+        for t, updown in zip(*sunset_sunrise_times):
+            if not updown:
+                if is_good_observation_time(t):
+                    good_times.append(t.utc_strftime('%Y-%m-%d %H:%M:%S'))
+
+        response_data = {
+            'latitude': observer_lat,
+            'longitude': observer_lon,
+            'observation_times': good_times
+        }
+
+        return JsonResponse(response_data)
+
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 def lunar_eclipse_prediction(request, latitude, longitude, number_of_days):
     try:
-        # Convert latitude and longitude to strings
         observer_latitude = str(latitude)
         observer_longitude = str(longitude)
 
-        # Initialize start and end time
         # curtime = datetime(2020, 1, 1, 0, 0, 0)
         # endtime = datetime(2025, 12, 31, 23, 59, 59)
 
         curtime = datetime.utcnow()
         endtime = curtime + timedelta(days=number_of_days)
 
-        # Initialize Moon, Sun, and observer
         moon = ephem.Moon()
         sun = ephem.Sun()
         observer = ephem.Observer()
@@ -351,13 +402,12 @@ def lunar_eclipse_prediction(request, latitude, longitude, number_of_days):
 
             sep = abs(float(ephem.separation(moon, sun)) / 0.01745329252 - 180)
 
-            # Eclipse occurs if the separation is less than 0.9°
+            #eclipse occurs if the separation is less than 0.9°
             if sep < 0.9:
                 eclipse_times.append(curtime.strftime('%Y/%m/%d %H:%M:%S'))
-                # An eclipse cannot happen more than once in a day, so skip 24 hours when an eclipse is found
                 curtime += timedelta(days=1)
             else:
-                curtime += timedelta(minutes=5)
+                curtime += timedelta(minutes=9)
 
         return JsonResponse({'eclipse_times': eclipse_times, 'end_time': endtime})
     except Exception as e:
@@ -365,8 +415,8 @@ def lunar_eclipse_prediction(request, latitude, longitude, number_of_days):
 
 
 def solar_eclipse_prediction(request, latitude, longitude, number_of_days):
-    # curtime = datetime(2024, 1, 1, 0, 0, 0)        # start time
-    # endtime = datetime(2030, 12, 31, 23, 59, 59)   # end time
+    # curtime = datetime(2024, 1, 1, 0, 0, 0)
+    # endtime = datetime(2030, 12, 31, 23, 59, 59)
 
     curtime = datetime.utcnow()
     endtime = curtime + timedelta(days=number_of_days)
@@ -389,13 +439,12 @@ def solar_eclipse_prediction(request, latitude, longitude, number_of_days):
 
         sep = abs((float(ephem.separation(moon, sun)) / 0.01745329252))
 
-        # A solar eclipse happens if Sun-Earth-Moon alignment is <1.5976°
+        #solar eclipse happens if sun-earth-moon alignment is <1.5976°
         if sep < 1.59754941:
             eclipses.append(curtime.strftime('%Y/%m/%d %H:%M:%S'))
-            # Skip 24 hours when an eclipse is found
             curtime += timedelta(days=1)
         else:
-            curtime += timedelta(minutes=5)
+            curtime += timedelta(minutes=9)
 
     return JsonResponse({'eclipse_times': eclipses})
 

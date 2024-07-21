@@ -11,7 +11,7 @@ describe('FeedPage', () => {
   });
 
   it('renders feed with last observations', async () => {
-    // Mock fetch requests
+    
     global.fetch = jest.fn().mockResolvedValueOnce({
       ok: true,
       json: () => ({
@@ -64,7 +64,7 @@ describe('FeedPage', () => {
   });
 
   it('redirects to user profile on username click', async () => {
-    // Mock fetch requests
+    
     global.fetch = jest.fn().mockResolvedValueOnce({
       ok: true,
       json: () => ({

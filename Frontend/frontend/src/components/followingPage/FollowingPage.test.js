@@ -10,7 +10,7 @@ describe('FollowingPage', () => {
   });
 
   it('displays following data correctly', async () => {
-    // Mock fetch requests and return dummy data
+   
     global.fetch = jest.fn()
       .mockResolvedValueOnce({
         ok: true,
@@ -27,7 +27,6 @@ describe('FollowingPage', () => {
 
     const { getByText } = render(<FollowingPage />, { wrapper: BrowserRouter });
 
-    // Wait for fetch requests to complete
     await waitFor(() => {
       expect(getByText('user1')).toBeInTheDocument();
       expect(getByText('user1@example.com')).toBeInTheDocument();
@@ -37,11 +36,11 @@ describe('FollowingPage', () => {
   });
 
   it('calls handleButtonClick when follow/unfollow button is clicked', async () => {
-    // Mock fetch requests and return dummy data
+  
     global.fetch = jest.fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: () => ({ following: [1], followers: [] }) // Simulate user already following another user
+        json: () => ({ following: [1], followers: [] })
       })
       .mockResolvedValueOnce({
         ok: true
@@ -51,7 +50,6 @@ describe('FollowingPage', () => {
 
     const { getByText } = render(<FollowingPage handleButtonClick={handleButtonClickMock} />, { wrapper: BrowserRouter });
 
-    // Wait for fetch requests to complete
     await waitFor(() => {
       fireEvent.click(getByText('Follow'));
     });
